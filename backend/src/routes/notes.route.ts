@@ -1,19 +1,26 @@
-import {Router} from "express"
-import { createNote, getSpecificNote, getAllDeletedNotes, updateNote, deleteNote, restoreDeletedNote } from "../controllers/notely.controller";
+import { Router } from "express";
+import {
+  createNote,
+  getSpecificNote,
+  getAllDeletedNotes,
+  updateNote,
+  deleteNote,
+  restoreDeletedNote,
+} from "../controllers/notely.controller";
 import authenticateToken from "../middlewares/auth.middleware";
 
-const router:Router = Router();
+const router: Router = Router();
 
-router.post ("/", authenticateToken, createNote);
+router.post("/", authenticateToken, createNote);
 
 router.get("/:noteId", authenticateToken, getSpecificNote);
 
-router.get("/trash", authenticateToken, getAllDeletedNotes)
+router.get("/trash", authenticateToken, getAllDeletedNotes);
 
-router.patch("/:noteId", authenticateToken, updateNote)
+router.patch("/:noteId", authenticateToken, updateNote);
 
-router.delete("/:noteId", authenticateToken, deleteNote)
+router.delete("/:noteId", authenticateToken, deleteNote);
 
-router.patch("/noteId", authenticateToken, restoreDeletedNote)
+router.patch("/noteId", authenticateToken, restoreDeletedNote);
 
 export default router;

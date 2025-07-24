@@ -8,7 +8,7 @@ export const validateBody = (schema: ZodType<any>) => {
     if (!result.success) {
       return res.status(400).json({ errors: treeifyError(result.error) });
     }
-    req.body = result.data; 
+    req.body = result.data;
     next();
   };
 };

@@ -1,12 +1,19 @@
-import './App.css'
+import "./App.css";
+import "./index.css";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/homePage";
 
 function App() {
-
   return (
     <>
-     <div>Nakupenda</div>
+      <Navbar />
+      <HomePage />
+      <Login />
+      <Register />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

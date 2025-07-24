@@ -9,7 +9,7 @@ async function checkUniquenessOfUsernameEmail(
   next: NextFunction,
 ) {
   const { userName, emailAddress } = req.body;
-  const emailUsed = await client.user.findFirst({ where: {emailAddress} });
+  const emailUsed = await client.user.findFirst({ where: { emailAddress } });
   if (emailUsed) {
     res.status(400).json({ message: "email exists" });
     return;

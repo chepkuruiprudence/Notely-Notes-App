@@ -1,7 +1,11 @@
 import zxcvbn from "zxcvbn";
 import { Request, Response, NextFunction } from "express";
 
-function verifyPasswordStrength(req: Request, res: Response, next: NextFunction) {
+function verifyPasswordStrength(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const { passWord } = req.body;
 
   if (typeof passWord !== "string") {
