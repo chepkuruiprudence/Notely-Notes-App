@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["https://notely-notes-app-g9bb.vercel.app/"],
+    origin: ["https://notely-notes-app-g9bb.vercel.app"],
     credentials: true,
   }),
 );
