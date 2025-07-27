@@ -4,7 +4,7 @@ import {
   getUserProfile,
   updateUserPassword,
   updateUserProfile,
-  getAllNotes,
+  getAllUserNotes,
 } from "../controllers/user.controller";
 
 const router: Router = Router();
@@ -15,6 +15,7 @@ router.patch("/notes", authenticateToken, updateUserProfile);
 
 router.post("/password", authenticateToken, updateUserPassword);
 
-router.get("/", authenticateToken, getAllNotes);
+router.get("/notes", authenticateToken, getAllUserNotes);
+
 
 export default router;

@@ -105,7 +105,7 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 };
 
 //get user notes
-export const getAllNotes = async (req: Request, res: Response) => {
+export const getAllUserNotes = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
 

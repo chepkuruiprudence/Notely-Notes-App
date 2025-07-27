@@ -1,97 +1,118 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import "@fontsource/roboto/400.css";
 import {
-  Button,
   Card,
-  CardActions,
+  Box,
   CardContent,
-  Typography,
+  CardActions,
   TextField,
   Stack,
-  Box,
-  IconButton,
-  InputAdornment,
+  Typography,
+  Alert,
 } from "@mui/material";
-import PasswordIcon from "@mui/icons-material/Password";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { LoadingButton } from "@mui/lab";
+import { Link, useNavigate } from "react-router-dom";
+import useUser from "../store/userstore";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import axiosInstance from "../api/axios";
+
+interface signInDetails {
+  identifier: string;
+  passWord: string;
+}
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const { setUser } = useUser();
+  const navigate = useNavigate();
+  const [identifier, setIdentifier] = useState("");
+  const [passWord, setPassWord] = useState("");
+  const [formError, setFormError] = useState("");
 
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["login_user"],
+    mutationFn: async (loginDetails: signInDetails) => {
+      const response = await axiosInstance.post("/auth/login", loginDetails);
+      return response.data;
+    },
+    onError: (err) => {
+      if (axios.isAxiosError(err)) {
+        setFormError(err.response?.data.message);
+      } else {
+        setFormError("Something went wrong");
+      }
+    },
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      setUser(data.userDetails);
+      navigate("/dashboard");
+    },
+  });
+
+  function handleSignIn() {
+    setFormError("");
+    mutate({ identifier: identifier.trim(), passWord: passWord.trim() });
+  }
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: "5rem",
-        height: "100vh",
+        minHeight: "100vh",
+        backgroundColor: "#9EADC8",
       }}
     >
       <Card
         sx={{
-          width: "50%",
-          height: "50vh",
+          width: "700px",
+          padding: 3,
+          backgroundColor: "#OC3B2E",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
+          flexDirection: "column",
         }}
       >
         <CardContent>
           <Stack spacing={3}>
-            <Typography variant="h6" sx={{ textAlign: "center" }}>
-              Log in to your Account
-            </Typography>
-
+            {formError && <Alert severity="error">{formError}</Alert>}
             <TextField
+              label="userName or Email"
               variant="outlined"
-              label="Username or Email"
               fullWidth
               required
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               sx={{ backgroundColor: "white" }}
             />
-
             <TextField
-              variant="outlined"
               label="Password"
-              type={showPassword ? "text" : "password"}
+              type="password"
+              variant="outlined"
               fullWidth
               required
-              sx={{ backgroundColor: "white" }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PasswordIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
-                        <VisibilityIcon />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              value={passWord}
+              onChange={(e) => setPassWord(e.target.value)}
+              sx={{ backgroundColor: "white", borderRadius: "10px" }}
             />
-            <CardActions sx={{ justifyContent: "center" }}>
-              <Button
-                size="large"
-                variant="contained"
-                sx={{ backgroundColor: "grey" }}
-              >
-                Sign In
-              </Button>
-            </CardActions>
           </Stack>
         </CardContent>
+        <CardActions
+          sx={{ display: "flex", justifyContent: "center", paddingBottom: 2 }}
+        >
+          <LoadingButton
+            variant="contained"
+            size="large"
+            onClick={handleSignIn}
+            loading={isPending}
+            sx={{ backgroundColor: "#3A015C" }}
+          >
+            Sign In
+          </LoadingButton>
+          <Typography>Forgot password</Typography>
+        </CardActions>
+        <Typography>
+          Don't have an account?<Link to="/register">Sign Up</Link>
+        </Typography>
       </Card>
     </Box>
   );

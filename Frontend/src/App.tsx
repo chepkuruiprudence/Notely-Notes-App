@@ -4,15 +4,40 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/homePage";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import MyNotes from "./pages/MyNotes";
+import Footer from "./components/Footer";
+import CreateNote from "./components/CreateNote";
+import Protectedroutes from "./utils/Protectedroutes";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
+import Fullnote from "./components/Fullnote";
+import Notes from "./pages/Notes";
+
+const client = new QueryClient();
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <HomePage />
-      <Login />
-      <Register />
-    </>
+    <QueryClientProvider client={client}>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route element={<Protectedroutes />}>
+            <Route path="/Createnote" element={<CreateNote />} />
+            <Route path="/Mynotes" element={<MyNotes />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/Notes" element={<Notes />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/notes/:noteId" element={<Fullnote />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

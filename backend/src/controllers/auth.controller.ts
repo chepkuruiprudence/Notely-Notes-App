@@ -24,6 +24,7 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(passWord, 10);
+    console.log(hashedPassword);
     const profileInitials = `${firstName[0]} ${lastName[0]}`.toUpperCase();
     const finalProfileImage = profileImage || profileInitials;
 
@@ -47,6 +48,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const logInUser = async (req: Request, res: Response) => {
   try {
     const { identifier, passWord } = req.body;
+    console.log("successful");
 
     if (!identifier || !passWord) {
       return res
@@ -79,8 +81,10 @@ export const logInUser = async (req: Request, res: Response) => {
     const payload = {
       id: user.id,
       userName: user.userName,
-      emailAddress: user.emailAddress,
+      email: user.emailAddress,
       profileImage: user.profileImage,
+      firstName: user.firstName,
+      secondName: user.lastName,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
@@ -89,7 +93,7 @@ export const logInUser = async (req: Request, res: Response) => {
 
     return res
       .status(201)
-      .json({ message: "Login Successful", token, userDetails });
+      .json({ message: "Login Successful", token, userDetails: payload });
   } catch (e) {
     return res.status(500).json({ message: "Internal Server Error" });
   }

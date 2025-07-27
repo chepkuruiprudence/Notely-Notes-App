@@ -1,58 +1,209 @@
-import React from "react";
+import React, { useState } from "react";
+
 import {
   Card,
   CardContent,
   Typography,
   TextField,
-  CardActions,
   Button,
   Stack,
   Box,
-  Link,
+  Alert,
+  Paper,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import { data, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Link } from "react-router-dom";
+import axiosInstance from "../api/axios";
+import { isAxiosError } from "axios";
+
+interface user {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  emailAddress: string;
+  passWord: string;
+}
 
 const Register = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [passWord, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
+  const toggleShowConfirmPassword = () =>
+    setShowConfirmPassword((prev) => !prev);
+
+  const { isPending, mutate } = useMutation({
+    mutationKey: ["register-user"],
+    mutationFn: async (newUser: user) => {
+      const response = await axiosInstance.post("/auth/register", newUser, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      return response.data;
+    },
+    onError: (err) => {
+      if (isAxiosError(err)) {
+        console.log(err);
+        setFormError(err.response?.data?.message || "Server error");
+      } else {
+        setFormError("Something went wrong");
+      }
+    },
+    onSuccess: () => {
+      navigate("/login");
+    },
+  });
+
+  const handleSignUp = () => {
+    setFormError("");
+    if (passWord !== confirmPassword) {
+      setFormError("Passwords do not match");
+      return;
+    }
+
+    const newUser = {
+      firstName,
+      lastName,
+      userName,
+      emailAddress,
+      passWord,
+    };
+    mutate(newUser);
+  };
+
   return (
     <Box
+      component="section"
       sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(to right, #f5f7fa, #c3cfe2)",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        p: 2,
+        justifyContent: "center",
+        marginTop: 10,
+        flexDirection: "column",
+        backgroundColor: "#9EADC8",
       }}
     >
       <Card
         sx={{
+          display: "flex",
+          flexDirection: "column",
+          padding: 2,
+          alignItems: "center",
+          justifyContent: "center",
+          maxWidth: 900,
           width: "100%",
-          maxWidth: 600,
-          borderRadius: 4,
-          boxShadow: 6,
         }}
       >
-        <CardContent>
-          <Typography variant="h5" textAlign="center" gutterBottom>
-            Sign Up for Your Account
-          </Typography>
+        <CardContent sx={{ flex: 1, width: "100%" }}>
+          <Paper component="form" sx={{ padding: 2 }}>
+            <Stack spacing={3}>
+              {formError && <Alert severity="error">{formError}</Alert>}
 
-          <Stack spacing={2} mt={3}>
-            <TextField label="First Name" fullWidth />
-            <TextField label="Last Name" fullWidth />
-            <TextField label="Username" fullWidth />
-            <TextField label="Email Address" type="email" fullWidth />
-            <TextField label="Password" type="password" fullWidth />
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField
+                  label="First Name"
+                  fullWidth
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+                <TextField
+                  label="Second Name"
+                  fullWidth
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </Stack>
 
-            <Typography variant="body2" textAlign="center" mt={2}>
-              Already have an account? <Link href="/login">Log in</Link>
-            </Typography>
-          </Stack>
+              <TextField
+                label="Username"
+                fullWidth
+                required
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+              />
+              <TextField
+                label="Email"
+                type="email"
+                fullWidth
+                required
+                value={emailAddress}
+                onChange={(e) => setEmailAddress(e.target.value)}
+              />
 
-          <CardActions sx={{ justifyContent: "center", mt: 3 }}>
-            <Button variant="contained" size="large">
-              Sign Up
-            </Button>
-          </CardActions>
+              <FormControl variant="outlined" fullWidth required>
+                <InputLabel>Password</InputLabel>
+                <OutlinedInput
+                  type={showPassword ? "text" : "password"}
+                  value={passWord}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={toggleShowPassword} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+
+              <FormControl variant="outlined" fullWidth required>
+                <InputLabel>Confirm Password</InputLabel>
+                <OutlinedInput
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setConfirmPassword(e.target.value)
+                  }
+                  label="Confirm Password"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={toggleShowConfirmPassword}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleSignUp}
+                disabled={isPending}
+                sx={{ backgroundColor: "#3A015C" }}
+              >
+                Sign Up
+              </Button>
+
+              <Typography>
+                Already have an account? <Link to="/login">Login</Link>
+              </Typography>
+            </Stack>
+          </Paper>
         </CardContent>
       </Card>
     </Box>

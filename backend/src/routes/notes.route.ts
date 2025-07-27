@@ -6,6 +6,9 @@ import {
   updateNote,
   deleteNote,
   restoreDeletedNote,
+  getPinnedNotes,
+  togglePinNote,
+  getAllNotes
 } from "../controllers/notely.controller";
 import authenticateToken from "../middlewares/auth.middleware";
 
@@ -21,6 +24,14 @@ router.patch("/:noteId", authenticateToken, updateNote);
 
 router.delete("/:noteId", authenticateToken, deleteNote);
 
-router.patch("/noteId", authenticateToken, restoreDeletedNote);
+router.patch("/:noteId/restore", authenticateToken, restoreDeletedNote);
+
+router.patch("/:id/pin-toggle", authenticateToken, togglePinNote);
+
+router.get("/pinned", authenticateToken, getPinnedNotes);
+
+
+
+router.get("/notes", getAllNotes)
 
 export default router;

@@ -1,4 +1,3 @@
-// schemas/user.schema.ts
 import * as z from "zod";
 
 export const verifyuserinfo = z.object({

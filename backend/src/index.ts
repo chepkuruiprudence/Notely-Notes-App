@@ -12,11 +12,18 @@ app.get("/", (req, res) => {
   res.send(`Hello Notely User!`);
 });
 
+app.use((req, res, next) => {
+  console.log("Request path:", req.path);
+  next();
+});
+
+
 app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173/"],
+    origin: ["http://localhost:5173"],
+    credentials: true,
   }),
 );
 

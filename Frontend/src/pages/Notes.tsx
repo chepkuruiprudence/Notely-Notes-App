@@ -23,7 +23,7 @@ interface Note {
   userId: string;
 }
 
-const MyNotes = () => {
+const Notes = () => {
   const { data, isLoading, isError, error } = useQuery<Note[], Error>({
     queryKey: ["myNotes"],
     queryFn: async () => {
@@ -81,7 +81,7 @@ const MyNotes = () => {
               sx={{ backgroundColor: "#3A015C" }}
               fullWidth
               component={Link}
-              to="/createnote"
+              to="/createNote"
             >
               Create New Note
             </Button>
@@ -92,4 +92,4 @@ const MyNotes = () => {
   );
 };
 
-export default MyNotes;
+export default Notes;

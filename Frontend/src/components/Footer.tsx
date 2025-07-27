@@ -26,7 +26,7 @@ const Footer = () => {
           }}
         >
           <Typography>
-            Let’s keep the conversation going. Connect with us!
+            Not-e it down.
           </Typography>
           <Typography
             variant="body2"

@@ -3,6 +3,22 @@ import { PrismaClient } from "@prisma/client";
 
 const client = new PrismaClient();
 
+export const getAllNotes = async (req: Request, res: Response) => {
+  try {
+    const notes = await client.note.findMany({
+      where: { isDeleted: false },
+      orderBy: {
+        dateCreated: "desc",
+      },
+    });
+    res.status(200).json(notes);
+  } catch (err) {
+    console.error("Fetch notes error:", err);
+    res.status(500).json({ message: "Failed to fetch notes" });
+  }
+};
+
+
 //create note
 export const createNote = async (req: Request, res: Response) => {
   try {
@@ -110,6 +126,8 @@ export const updateNote = async (req: Request<Params>, res: Response) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
+      console.log("Updating note with:", { title, synopsis, content });
+
     const updatedNote = await client.note.update({
       where: { id: noteId },
       data: { title, synopsis, content },
@@ -118,8 +136,8 @@ export const updateNote = async (req: Request<Params>, res: Response) => {
     return res
       .status(200)
       .json({ message: "Note updated successfully", updatedNote });
-  } catch (e) {
-    console.log("Error updating note.", e);
+  } catch (e: any) {
+    console.log("Error updating note.", e.message, e.stack);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -187,5 +205,49 @@ export const restoreDeletedNote = async (req: Request, res: Response) => {
   } catch (e) {
     console.log("Error restoring note");
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const togglePinNote = async (req: Request<Params>, res: Response) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id;
+
+    const note = await client.note.findUnique({ where: { id: noteId } });
+
+    if (!note || note.userId !== userId) {
+      return res.status(404).json({ message: "Not found or unauthorized" });
+    }
+
+    const updated = await client.note.update({
+      where: { id: noteId },
+      data: { isPinned: !note.isPinned },
+    });
+
+    return res.status(200).json({ message: "Toggled pin", updated });
+  } catch (e) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+export const getPinnedNotes = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    console.log("✅ GET /pinned was called");
+
+    const pinnedNotes = await client.note.findMany({
+      where: {
+        userId,
+        isPinned: true,
+        isDeleted: false,
+      },
+    });
+
+    return res.status(200).json(pinnedNotes);
+  } catch (err) {
+    console.error("Error fetching pinned notes", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

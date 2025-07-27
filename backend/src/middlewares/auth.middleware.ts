@@ -14,13 +14,17 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
 
     if (typeof decoded === "object" && decoded !== null) {
-      req.user = decoded as UserPayload;
+      const user = decoded as UserPayload;
+
+      console.log(" Logged-in user:", user);
+
+      req.user = user;
       return next();
     } else {
       return res.status(403).json({ message: "Invalid token payload format." });
     }
   } catch (err) {
-    console.error("JWT verification error:", err);
+    console.error(" JWT verification error:", err);
     return res.status(403).json({ message: "Invalid or expired token." });
   }
 };
