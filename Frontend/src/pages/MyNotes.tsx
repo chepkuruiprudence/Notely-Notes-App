@@ -1,4 +1,3 @@
-import React, { use } from "react";
 import Notecard from "../components/notecard";
 import { Link } from "react-router-dom";
 import axiosInstance from "../api/axios";

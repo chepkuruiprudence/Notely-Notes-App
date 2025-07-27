@@ -2,13 +2,11 @@ import {
   Card,
   CardContent,
   Typography,
-  Avatar,
   Box,
   Button,
   Stack,
   TextField,
 } from "@mui/material";
-import homepage from "../assets/images/homepage.jpg";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import PasswordForm from "../components/PasswordEditForm";
@@ -20,14 +18,6 @@ interface user {
   email: string;
   userName: string;
   avatar: string;
-}
-
-interface ProfileImageUploadProps {
-  user: {
-    avatar?: string;
-    firstName?: string;
-    secondName?: string;
-  };
 }
 
 const Profile = () => {

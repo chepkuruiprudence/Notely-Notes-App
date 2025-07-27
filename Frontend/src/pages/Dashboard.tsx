@@ -13,7 +13,7 @@ import useUser from "../store/userstore";
 import { useQuery } from "@tanstack/react-query";
 import axios from "../api/axios";
 import Notecard from "../components/notecard";
-import { Note } from "../types/note";
+import type { Note } from "../types/note";
 
 const Dashboard = () => {
   const { user, logoutUser } = useUser();

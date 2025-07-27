@@ -12,7 +12,6 @@ import EditNoteForm from "./EditNoteForm";
 import useUser from "../store/userstore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../api/axios";
-import Fullnote from "./Fullnote";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Tooltip from "@mui/material/Tooltip";
 import EditNoteIcon from "@mui/icons-material/EditNote";

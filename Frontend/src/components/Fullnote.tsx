@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Avatar,
   Container,
   CircularProgress,
   Alert,
