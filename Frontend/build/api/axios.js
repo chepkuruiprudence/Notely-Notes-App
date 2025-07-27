@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const axiosInstance = axios_1.default.create({
-    baseURL: "https://notely-notes-app.onrender.com",
+    baseURL: import.meta.env.VITE_API_URL,
     //"http://localhost:5000/api",
 });
 axiosInstance.interceptors.request.use((config) => {

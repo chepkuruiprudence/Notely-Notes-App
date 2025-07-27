@@ -47,6 +47,8 @@ const Register = () => {
   const toggleShowConfirmPassword = () =>
     setShowConfirmPassword((prev) => !prev);
 
+  //const BASE_URL = import.meta.env.DEV ? '' : import.meta.env.VITE_API_URL;
+
   const { isPending, mutate } = useMutation({
     mutationKey: ["register-user"],
     mutationFn: async (newUser: user) => {
