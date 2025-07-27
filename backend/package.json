@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon src/index.ts",
@@ -17,20 +17,22 @@
   "description": "",
   "devDependencies": {
     "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
+    "@types/react": "^19.1.8",
     "@types/zxcvbn": "^4.4.5",
-    "prisma": "^6.12.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.11.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.12.0",
-    "@types/express": "^5.0.3",
+    "@prisma/client": "^6.11.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
-    "zod": "^4.0.5",
+    "react-hot-toast": "^2.5.2",
+    "zustand": "^5.0.6",
     "zxcvbn": "^4.4.2"
   }
 }
