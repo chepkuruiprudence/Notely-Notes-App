@@ -7,7 +7,8 @@
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build": "tsc -b && vite build"
+    "build": "tsc -b && vite build",
+    "start": "serve -s dist"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -25,6 +26,7 @@
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.6.3",
+    "serve": "^14.2.4",
     "styled-components": "^6.1.19",
     "zustand": "^5.0.6"
   },
