@@ -26,7 +26,13 @@ interface NoteCardProps {
   userId: string;
 }
 
-const Notecard: React.FC<NoteCardProps> = ({ id, title, synopsis, userId, content }) => {
+const Notecard: React.FC<NoteCardProps> = ({
+  id,
+  title,
+  synopsis,
+  userId,
+  content,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useUser();
 
@@ -93,14 +99,14 @@ const Notecard: React.FC<NoteCardProps> = ({ id, title, synopsis, userId, conten
   }
 
   const { mutate: togglePin } = useMutation({
-  mutationFn: async () => {
-    await axiosInstance.patch(`/notes/${id}/pin-toggle`);
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["notes"] });
-    queryClient.invalidateQueries({ queryKey: ["pinnedNotes"] });
-  },
-});
+    mutationFn: async () => {
+      await axiosInstance.patch(`/notes/${id}/pin-toggle`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["pinnedNotes"] });
+    },
+  });
 
   return (
     <Card>
@@ -125,42 +131,44 @@ const Notecard: React.FC<NoteCardProps> = ({ id, title, synopsis, userId, conten
 
         {user?.id === userId && (
           <Stack direction="row" spacing={2} padding={1}>
-  <Tooltip title="Edit Note">
-    <IconButton
-      onClick={() => setIsEditing(true)}
-      sx={{
-        backgroundColor: "#3A015C",
-        color: "white",
-        "&:hover": { backgroundColor: "#29013f" },
-      }}
-    >
-      <EditNoteIcon />
-    </IconButton>
-  </Tooltip>
+            <Tooltip title="Edit Note">
+              <IconButton
+                onClick={() => setIsEditing(true)}
+                sx={{
+                  backgroundColor: "#3A015C",
+                  color: "white",
+                  "&:hover": { backgroundColor: "#29013f" },
+                }}
+              >
+                <EditNoteIcon />
+              </IconButton>
+            </Tooltip>
 
-  <Tooltip title="Delete Note">
-    <IconButton
-      onClick={() => {
-  if (window.confirm("Are you sure you want to delete this note?")) {
-    deleteNote();
-  }
-}}
-      sx={{
-        backgroundColor: "red",
-        color: "white",
-        "&:hover": { backgroundColor: "#b71c1c" },
-      }}
-    >
-      <DeleteIcon />
-    </IconButton>
-  </Tooltip>
+            <Tooltip title="Delete Note">
+              <IconButton
+                onClick={() => {
+                  if (
+                    window.confirm("Are you sure you want to delete this note?")
+                  ) {
+                    deleteNote();
+                  }
+                }}
+                sx={{
+                  backgroundColor: "red",
+                  color: "white",
+                  "&:hover": { backgroundColor: "#b71c1c" },
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
 
-  <Tooltip title="Toggle Pin">
-  <IconButton onClick={() => togglePin()}>
-    <PushPinIcon />
-  </IconButton>
-</Tooltip>
-</Stack>
+            <Tooltip title="Toggle Pin">
+              <IconButton onClick={() => togglePin()}>
+                <PushPinIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         )}
       </CardContent>
     </Card>

@@ -17,5 +17,4 @@ router.post("/password", authenticateToken, updateUserPassword);
 
 router.get("/notes", authenticateToken, getAllUserNotes);
 
-
 export default router;

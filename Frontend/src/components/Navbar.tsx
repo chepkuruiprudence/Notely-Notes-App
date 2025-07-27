@@ -15,7 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useUser from "../store/userstore";
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const Navbar = () => {
   const { user, logoutUser } = useUser();
@@ -131,7 +131,7 @@ const Navbar = () => {
               >
                 {item.icon}
               </IconButton>
-            ) : null
+            ) : null,
           )}
         </Box>
 

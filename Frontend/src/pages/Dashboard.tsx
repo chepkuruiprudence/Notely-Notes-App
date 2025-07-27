@@ -51,11 +51,11 @@ const Dashboard = () => {
 
   return (
     <Grid container height="100vh">
-      
       <Grid
-        size = {{
-        xs: 12,
-        md: 3}}
+        size={{
+          xs: 12,
+          md: 3,
+        }}
         sx={{
           backgroundColor: "#0C3B2E",
           color: "white",
@@ -121,9 +121,10 @@ const Dashboard = () => {
       </Grid>
 
       <Grid
-        size = {{
-        xs:12,
-        md:9}}
+        size={{
+          xs: 12,
+          md: 9,
+        }}
         sx={{
           backgroundColor: "#f4f4f4",
           p: 4,
@@ -151,7 +152,7 @@ const Dashboard = () => {
           {pinnedNotes?.length > 0 && (
             <Grid container spacing={2}>
               {pinnedNotes.map((note: Note) => (
-                <Grid  key={note.id}  size = {{xs: 12, sm: 6, md: 4}}>
+                <Grid key={note.id} size={{ xs: 12, sm: 6, md: 4 }}>
                   <Notecard
                     id={note.id}
                     title={note.title}

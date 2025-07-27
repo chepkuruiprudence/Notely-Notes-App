@@ -97,7 +97,7 @@ const Profile = () => {
       >
         <CardContent>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-            <ProfileImageUpload user = {user}/>
+            <ProfileImageUpload user={user} />
             <Typography variant="h6">
               {user.firstName} {user.secondName}
             </Typography>

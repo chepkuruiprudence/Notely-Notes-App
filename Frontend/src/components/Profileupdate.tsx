@@ -21,7 +21,14 @@ const ProfileImageUpload = ({ user }: { user: any }) => {
   const showInitials = !preview && !user.profileImage;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 1,
+      }}
+    >
       <Avatar
         src={avatarSrc}
         sx={{
@@ -29,9 +36,9 @@ const ProfileImageUpload = ({ user }: { user: any }) => {
           height: 100,
           cursor: "pointer",
           bgcolor: "transparent",
-          color: "black",        
+          color: "black",
           border: "2px solid #1976d2",
-          fontSize: 32
+          fontSize: 32,
         }}
         onClick={handleAvatarClick}
       >

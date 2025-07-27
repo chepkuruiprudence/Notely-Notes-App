@@ -93,7 +93,7 @@ const CreateNote = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
-            
+
             <FormControl>
               <FormLabel>Visibility</FormLabel>
               <RadioGroup

@@ -18,7 +18,6 @@ export const getAllNotes = async (req: Request, res: Response) => {
   }
 };
 
-
 //create note
 export const createNote = async (req: Request, res: Response) => {
   try {
@@ -126,7 +125,7 @@ export const updateNote = async (req: Request<Params>, res: Response) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-      console.log("Updating note with:", { title, synopsis, content });
+    console.log("Updating note with:", { title, synopsis, content });
 
     const updatedNote = await client.note.update({
       where: { id: noteId },
@@ -229,8 +228,6 @@ export const togglePinNote = async (req: Request<Params>, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 export const getPinnedNotes = async (req: Request, res: Response) => {
   try {

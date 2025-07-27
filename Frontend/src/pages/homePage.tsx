@@ -49,7 +49,7 @@ const HomePage = () => {
             textAlign: "center",
             marginBottom: 4,
             color: "white",
-            gap: 2
+            gap: 2,
           }}
         >
           <Typography variant="h3" gutterBottom>
@@ -60,14 +60,14 @@ const HomePage = () => {
             Stay organized and inspired.
           </Typography>
           <Button
-  variant="contained"
-  color="primary"
-  size="large"
-  component={Link}
-  to="/login"
->
-  Get Started
-</Button>
+            variant="contained"
+            color="primary"
+            size="large"
+            component={Link}
+            to="/login"
+          >
+            Get Started
+          </Button>
         </Grid>
 
         <Grid

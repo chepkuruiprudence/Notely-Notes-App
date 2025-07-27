@@ -1,0 +1,8 @@
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
+  "build": {
+    "env": {
+      "SWC_BINARY_TARGET": "nodejs18-linux-x64-gnu"
+    }
+  }
+}

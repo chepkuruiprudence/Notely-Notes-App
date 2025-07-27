@@ -25,9 +25,7 @@ const Footer = () => {
             justifyContent: "center",
           }}
         >
-          <Typography>
-            Not-e it down.
-          </Typography>
+          <Typography>Not-e it down.</Typography>
           <Typography
             variant="body2"
             color="white"
