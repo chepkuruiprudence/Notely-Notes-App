@@ -5,10 +5,11 @@ import TrashNoteCard from "../components/TrashNoteCard ";
 import { Container, Typography, CircularProgress, Box } from "@mui/material";
 
 interface Note {
-  noteId: string;
+  id: string;
   title: string;
   synopsis: string;
   content: string;
+  isDeleted: boolean;
 }
 
 const fetchDeletedNotes = async (): Promise<Note[]> => {
@@ -55,7 +56,7 @@ const Trash: React.FC = () => {
       >
         {data?.map((note) => (
           <Box
-            key={note.noteId}
+            key={note.id}
             flexBasis={{
               xs: "100%",
               sm: "48%",
@@ -63,10 +64,11 @@ const Trash: React.FC = () => {
             }}
           >
             <TrashNoteCard
-              noteId={note.noteId}
+              id={note.id}
               title={note.title}
               synopsis={note.synopsis}
               content={note.content}
+              isDeleted={note.isDeleted }
             />
           </Box>
         ))}

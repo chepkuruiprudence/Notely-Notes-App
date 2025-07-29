@@ -84,7 +84,7 @@ export const logInUser = async (req: Request, res: Response) => {
       email: user.emailAddress,
       profileImage: user.profileImage,
       firstName: user.firstName,
-      secondName: user.lastName,
+      lastName: user.lastName,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {

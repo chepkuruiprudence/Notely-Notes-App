@@ -87,7 +87,7 @@ const logInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             email: user.emailAddress,
             profileImage: user.profileImage,
             firstName: user.firstName,
-            secondName: user.lastName,
+            lastName: user.lastName,
         };
         const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
             expiresIn: "2h",

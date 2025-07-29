@@ -188,7 +188,7 @@ const Navbar = () => {
               }}
             >
               {user.firstName?.[0]?.toUpperCase() ?? ""}
-              {user.secondName?.[0]?.toUpperCase() ?? ""}
+              {user.lastName?.[0]?.toUpperCase() ?? ""}
             </Avatar>
           ) : (
             <Typography variant="caption" color="gray">

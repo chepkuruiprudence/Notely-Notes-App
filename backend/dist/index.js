@@ -9,6 +9,8 @@ const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const notes_route_1 = __importDefault(require("./routes/notes.route"));
 const auth_middleware_1 = __importDefault(require("./middlewares/auth.middleware"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
+const ai_controller_1 = __importDefault(require("./controllers/ai.controller"));
+const trascription_route_1 = __importDefault(require("./routes/trascription.route"));
 const PORT = 5000;
 const app = (0, express_1.default)();
 app.get("/", (req, res) => {
@@ -20,13 +22,16 @@ app.use((req, res, next) => {
 });
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: ["https://notely-notes-app-g9bb.vercel.app"],
-    // origin: ["http://localhost:5173"],
+    // origin: ["https://notely-notes-app-g9bb.vercel.app"],
+    origin: ["http://localhost:5173"],
     credentials: true,
 }));
 app.use("/api/auth", auth_route_1.default);
 app.use("/api/notes", auth_middleware_1.default, notes_route_1.default);
 app.use("/api/user", auth_middleware_1.default, user_routes_1.default);
+app.use("/api", ai_controller_1.default);
+app.use("/api/transcription", trascription_route_1.default);
+app.use("/uploads", express_1.default.static("uploads"));
 console.log("Router mounted");
 app.listen(PORT, () => {
     console.log(`Server is running on port:${PORT}`);

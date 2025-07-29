@@ -18,6 +18,7 @@ import axiosInstance from "../api/axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import SummarizeButton from "./SummarizeButton";
 
 interface NoteCardProps {
   noteId: string;
@@ -42,6 +43,7 @@ const Notecard: React.FC<NoteCardProps> = ({
   const { user } = useUser();
   const token = localStorage.getItem("token");
   const queryClient = useQueryClient();
+  const [summary, setSummary] = useState("");
 
   const { mutate: updateNote } = useMutation({
     mutationFn: async (updatedNote: {
@@ -168,6 +170,15 @@ const Notecard: React.FC<NoteCardProps> = ({
         >
           Read More →
         </Button>
+
+        <SummarizeButton content={content} onSummary={setSummary} />
+
+{summary && (
+  <Typography variant="body2" sx={{ mt: 1 }}>
+    <strong>Summary:</strong> {summary}
+  </Typography>
+)}
+
 
         {user?.id === userId && (
           <Stack direction="row" spacing={1} mt={2}>

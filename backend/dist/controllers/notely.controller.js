@@ -147,7 +147,8 @@ exports.deleteNote = deleteNote;
 const restoreDeletedNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.user.id;
-        const noteId = req.params.id;
+        const noteId = req.params.noteId;
+        console.log("Restoring note:", { noteId, userId });
         const note = yield client.note.findUnique({ where: { id: noteId } });
         if (!note) {
             return res.status(404).json({ message: "Note not found" });
@@ -156,7 +157,7 @@ const restoreDeletedNote = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return res.status(403).json({ message: "Unauthorized" });
         }
         if (!note.isDeleted) {
-            return res.status(400).json({ message: "Note is exists" });
+            return res.status(400).json({ message: "Note is already active" });
         }
         const restoredNote = yield client.note.update({
             where: { id: noteId },
@@ -167,7 +168,7 @@ const restoreDeletedNote = (req, res) => __awaiter(void 0, void 0, void 0, funct
             .json({ message: "Note restored successfully.", restoredNote });
     }
     catch (e) {
-        console.log("Error restoring note");
+        console.error("Error restoring note:", e instanceof Error ? e.message : e);
         res.status(500).json({ message: "Internal server error" });
     }
 });

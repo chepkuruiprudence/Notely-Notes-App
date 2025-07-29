@@ -42,32 +42,34 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getUserProfile = getUserProfile;
 const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, firstName, lastName, userName, emailAddress, profileImage } = req.body;
         const userId = req.user.id;
-        const profile = yield client.user.findUnique({ where: { id: userId } });
-        if (!profile) {
-            return res.status(404).json({ message: "Profile not found" });
+        const { firstName, lastName, userName, emailAddress } = req.body;
+        const existingUser = yield client.user.findUnique({ where: { id: userId } });
+        if (!existingUser) {
+            return res.status(404).json({ message: "User not found" });
         }
-        if (profile.id !== userId) {
-            return res.status(401).json({ message: "Unauthorized" });
+        let profileImage = existingUser.profileImage;
+        if (req.file) {
+            profileImage = `/uploads/${req.file.filename}`;
         }
-        const updatedUserProfile = yield client.user.update({
+        const updatedUser = yield client.user.findUnique({
             where: { id: userId },
-            data: {
-                id,
-                firstName,
-                lastName,
-                userName,
-                emailAddress,
-                profileImage,
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                userName: true,
+                emailAddress: true,
+                profileImage: true,
             },
         });
-        return res
-            .status(200)
-            .json({ message: "Profile updated successfully.", updatedUserProfile });
+        return res.status(200).json({
+            message: "Profile updated successfully.",
+            profile: updatedUser,
+        });
     }
-    catch (e) {
-        console.log("Error updating note.", e);
+    catch (error) {
+        console.error("Error updating profile:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 });
@@ -139,7 +141,10 @@ const getAllDeletedNotes = (req, res) => __awaiter(void 0, void 0, void 0, funct
             },
         });
         if (!deletedNotes || deletedNotes.length === 0) {
-            return res.status(404).json({ message: "There are no deleted posts" });
+            return res.status(200).json({
+                message: "No deleted notes found",
+                data: [],
+            });
         }
         console.log(deletedNotes);
         return res.status(200).json({

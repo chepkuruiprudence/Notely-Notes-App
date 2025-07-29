@@ -97,10 +97,10 @@ const Dashboard = () => {
                 }}
               >
                 {user.firstName?.[0]?.toUpperCase() || ""}
-                {user.secondName?.[0]?.toUpperCase() || ""}
+                {user.lastName?.[0]?.toUpperCase() || ""}
               </Avatar>
               <Typography variant="subtitle1">
-                {user.firstName} {user.secondName}
+                {user.firstName} {user.lastName}
               </Typography>
             </Box>
           )}

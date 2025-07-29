@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
-import { Avatar, Box, Button } from "@mui/material";
+import { Avatar, Box } from "@mui/material";
+import axiosInstance from "../api/axios";
 
-const ProfileImageUpload = ({ user }: { user: any }) => {
+const Profile = ({ user }: { user: any }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -9,11 +10,32 @@ const ProfileImageUpload = ({ user }: { user: any }) => {
     fileInputRef.current?.click();
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
+
+      const formData = new FormData();
+      formData.append("profileImage", file);
+      formData.append("firstName", user.firstName);
+      formData.append("lastName", user.lastName);
+      formData.append("userName", user.userName);
+      formData.append("emailAddress", user.emailAddress);
+
+      try {
+        const res = await axiosInstance.post("/user/update", formData, {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    "Content-Type": "multipart/form-data",
+  },
+});
+
+        const data = await res.data;
+        console.log("Upload result:", data);
+      } catch (err) {
+        console.error("Upload failed", err);
+      }
     }
   };
 
@@ -26,7 +48,7 @@ const ProfileImageUpload = ({ user }: { user: any }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 1,
+        gap: 2,
       }}
     >
       <Avatar
@@ -43,22 +65,20 @@ const ProfileImageUpload = ({ user }: { user: any }) => {
         onClick={handleAvatarClick}
       >
         {showInitials &&
-          `${user.firstName?.[0]?.toUpperCase() ?? ""}${user.secondName?.[0]?.toUpperCase() ?? ""}`}
+          `${user.firstName?.[0]?.toUpperCase() ?? ""}${
+            user.lastName?.[0]?.toUpperCase() ?? ""
+          }`}
       </Avatar>
-
-      <Button variant="outlined" onClick={handleAvatarClick}>
-        Upload Image
-      </Button>
 
       <input
         type="file"
         accept="image/*"
-        onChange={handleImageChange}
         ref={fileInputRef}
+        onChange={handleImageChange}
         style={{ display: "none" }}
       />
     </Box>
   );
 };
 
-export default ProfileImageUpload;
+export default Profile;

@@ -15,7 +15,7 @@ import ProfileImageUpload from "../components/Profileupdate";
 interface user {
   id: string;
   firstName: string;
-  secondName: string;
+  lastName: string;
   emailAddress: string;
   userName: string;
   profileImage: string;
@@ -31,17 +31,20 @@ const Profile = () => {
     userName: "",
     profileImage: "",
   });
+  const token = localStorage.getItem("token");
+
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await axiosInstance.get("/user");
         const profile = response.data.profile;
+        
 
         setUser({
           id: profile.id,
           firstName: profile.firstName,
-          secondName: profile.lastName,
+          lastName: profile.lastName,
           emailAddress: profile.emailAddress,
           userName: profile.userName,
           profileImage: profile.profileImage,
@@ -67,9 +70,16 @@ const Profile = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
 
+  console.log("Current User:", user);
+
   const handleSave = async () => {
     try {
-      await axiosInstance.patch(`/user/${user.id}`, formValues);
+      await axiosInstance.patch(`/user/${user.id}`, formValues,  {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "multipart/form-data",
+  },
+});
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update profile", error);
@@ -102,7 +112,7 @@ const Profile = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
             <ProfileImageUpload user={user} />
             <Typography variant="h6">
-              {user.firstName} {user.secondName}
+              {user.firstName} {user.lastName}
             </Typography>
           </Box>
 
@@ -117,7 +127,7 @@ const Profile = () => {
             />
             <TextField
               label="Second Name"
-              name="secondName"
+              name="lastName"
               value={formValues.lastName}
               onChange={handleChange}
               fullWidth

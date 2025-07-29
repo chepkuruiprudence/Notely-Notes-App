@@ -14,29 +14,33 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../api/axios";
 
 interface TrashNoteCardProps {
-  noteId: string;
+  id: string;
   title: string;
   synopsis: string;
   content: string;
+  isDeleted: boolean;
 }
 
 const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
-  noteId,
+  id,
   title,
   synopsis,
   content,
+  isDeleted,
 }) => {
   const queryClient = useQueryClient();
 
   const { mutate: restoreNote } = useMutation({
-    mutationFn: () => axiosInstance.patch(`/notes/${noteId}/restore`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trashNotes"] });
-    },
-  });
+  mutationFn: () => axiosInstance.patch(`/notes/${id}/restore`),
+  onSuccess: () => {
+    queryClient.setQueryData(["trashNotes"], (oldData: any) =>
+      oldData?.filter((note: any) => note.id !== id)
+    );
+  },
+});
 
   const { mutate: permanentlyDelete } = useMutation({
-    mutationFn: () => axiosInstance.delete(`/notes/${noteId}/permanent`),
+    mutationFn: () => axiosInstance.delete(`/notes/${id}/permanent`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trashNotes"] });
     },
@@ -51,7 +55,7 @@ const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: 300, // Adjust this height to your preference
+        minHeight: 300, 
         p: 2,
         my: 2,
       }}
@@ -78,6 +82,7 @@ const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
               color="primary"
               startIcon={<RestoreFromTrashIcon />}
               onClick={() => restoreNote()}
+              disabled={!isDeleted} 
             >
               Restore
             </Button>

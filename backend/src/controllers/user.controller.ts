@@ -29,43 +29,45 @@ export const getUserProfile = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server error" });
   }
 };
-
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const { id, firstName, lastName, userName, emailAddress, profileImage } =
-      req.body;
     const userId = req.user.id;
+    const { firstName, lastName, userName, emailAddress } = req.body;
 
-    const profile = await client.user.findUnique({ where: { id: userId } });
-
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found" });
+    const existingUser = await client.user.findUnique({ where: { id: userId } });
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    if (profile.id !== userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+    let profileImage = existingUser.profileImage;
+
+    if (req.file) {
+      profileImage = `/uploads/${req.file.filename}`;
     }
 
-    const updatedUserProfile = await client.user.update({
-      where: { id: userId },
-      data: {
-        id,
-        firstName,
-        lastName,
-        userName,
-        emailAddress,
-        profileImage,
-      },
+    const updatedUser = await client.user.findUnique({
+  where: { id: userId },
+  select: {
+    id: true, 
+    firstName: true,
+    lastName: true,
+    userName: true,
+    emailAddress: true,
+    profileImage: true,
+  },
+});
+
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      profile: updatedUser,
     });
-
-    return res
-      .status(200)
-      .json({ message: "Profile updated successfully.", updatedUserProfile });
-  } catch (e) {
-    console.log("Error updating note.", e);
+  } catch (error) {
+    console.error("Error updating profile:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 export const updateUserPassword = async (req: Request, res: Response) => {
   try {
@@ -142,9 +144,13 @@ export const getAllDeletedNotes = async (req: Request, res: Response) => {
       },
     });
 
-    if (!deletedNotes || deletedNotes.length === 0) {
-      return res.status(404).json({ message: "There are no deleted posts" });
-    }
+   if (!deletedNotes || deletedNotes.length === 0) {
+  return res.status(200).json({
+    message: "No deleted notes found",
+    data: [],
+  });
+}
+
 
     console.log(deletedNotes);
     return res.status(200).json({

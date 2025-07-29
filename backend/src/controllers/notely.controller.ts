@@ -156,7 +156,10 @@ export const deleteNote = async (req: Request, res: Response) => {
 export const restoreDeletedNote = async (req: Request, res: Response) => {
   try {
     const userId = req.user.id;
-    const noteId = req.params.id;
+    const noteId = req.params.noteId;
+
+    console.log("Restoring note:", { noteId, userId });
+
 
     const note = await client.note.findUnique({ where: { id: noteId } });
 
@@ -169,7 +172,7 @@ export const restoreDeletedNote = async (req: Request, res: Response) => {
     }
 
     if (!note.isDeleted) {
-      return res.status(400).json({ message: "Note is exists" });
+      return res.status(400).json({ message: "Note is already active" });
     }
 
     const restoredNote = await client.note.update({
@@ -180,7 +183,8 @@ export const restoreDeletedNote = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Note restored successfully.", restoredNote });
   } catch (e) {
-    console.log("Error restoring note");
+    console.error("Error restoring note:", e instanceof Error ? e.message : e);
+
     res.status(500).json({ message: "Internal server error" });
   }
 };
