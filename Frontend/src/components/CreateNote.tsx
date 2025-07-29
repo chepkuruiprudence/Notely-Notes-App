@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import axiosInstance from "../api/axios";
-import AudioRecorder from "./AudioRecorder";
+// import AudioRecorder from "./AudioRecorder";
 
 import {
   Box,
@@ -65,7 +65,7 @@ const CreateNote = () => {
     <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
       <Card sx={{ width: "500px", padding: 2, marginTop: 10 }}>
         <CardContent>
-          <AudioRecorder onTranscript={(transcript) => setContent(transcript)} />
+          {/* <AudioRecorder onTranscript={(transcript) => setContent(transcript)} /> */}
 
           <Stack spacing={2}>
             <Typography variant="h5" sx={{ color: "green" }}>
