@@ -32,7 +32,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
 
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, userName, emailAddress, profileImage } =
+    const { id, firstName, lastName, userName, emailAddress, profileImage } =
       req.body;
     const userId = req.user.id;
 
@@ -49,6 +49,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     const updatedUserProfile = await client.user.update({
       where: { id: userId },
       data: {
+        id,
         firstName,
         lastName,
         userName,
@@ -118,5 +119,71 @@ export const getAllUserNotes = async (req: Request, res: Response) => {
     res.status(200).json(notes);
   } catch (e) {
     res.status(400).json({ message: "Failed to fetch notes", e });
+  }
+};
+
+//get deleted notes for a user
+export const getAllDeletedNotes = async (req: Request, res: Response) => {
+  try {
+    console.log("Entered getAllDeletedNotes route");
+    const user = (req as any).user;
+
+    if (!user) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const deletedNotes = await client.note.findMany({
+      where: {
+        isDeleted: true,
+        userId: user.id,
+      },
+      orderBy: {
+        lastUpdated: "desc",
+      },
+    });
+
+    if (!deletedNotes || deletedNotes.length === 0) {
+      return res.status(404).json({ message: "There are no deleted posts" });
+    }
+
+    console.log(deletedNotes);
+    return res.status(200).json({
+      message: "Deleted notes fetched successfully",
+      data: deletedNotes,
+    });
+  } catch (e) {
+    console.error("Error fetching deleted notes:", e);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+export const getPinnedNotes = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const pinnedNotes = await client.note.findMany({
+      where: {
+        userId: userId,
+        isPinned: true,
+        isDeleted: false,
+      },
+      orderBy: {
+        dateCreated: "desc",
+      },
+    });
+
+    console.log("Found pinned notes:", pinnedNotes.length);
+
+    return res.status(200).json({
+      success: true,
+      data: pinnedNotes,
+      message: "Pinned notes retrieved successfully",
+    });
+  } catch (err: any) {
+    console.error("Error in getPinnedNotes:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };

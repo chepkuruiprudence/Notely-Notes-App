@@ -16,7 +16,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 const PasswordEditForm = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
   const [formError, setFormError] = useState("");
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -28,14 +28,19 @@ const PasswordEditForm = () => {
       const res = await axiosInstance.patch("/user/password", {
         currentPassword,
         newPassword,
-        confirmNewPassword,
+        confirmedPassword,
       });
+      if (newPassword !== confirmedPassword) {
+        setFormError("New passwords do not match");
+        return;
+      }
+
       return res.data;
     },
     onSuccess: () => {
       setCurrentPassword("");
       setNewPassword("");
-      setConfirmNewPassword("");
+      setConfirmedPassword("");
       setFormError("");
       alert("Password updated successfully!");
     },
@@ -92,8 +97,8 @@ const PasswordEditForm = () => {
         <InputLabel>Confirm New Password</InputLabel>
         <OutlinedInput
           type={showConfirmPassword ? "text" : "password"}
-          value={confirmNewPassword}
-          onChange={(e) => setConfirmNewPassword(e.target.value)}
+          value={confirmedPassword}
+          onChange={(e) => setConfirmedPassword(e.target.value)}
           label="Confirm New Password"
           endAdornment={
             <InputAdornment position="end">
@@ -116,8 +121,8 @@ const PasswordEditForm = () => {
           isPending ||
           !currentPassword ||
           !newPassword ||
-          !confirmNewPassword ||
-          newPassword !== confirmNewPassword
+          !confirmedPassword ||
+          newPassword !== confirmedPassword
         }
       >
         {isPending ? "Updating..." : "Update Password"}

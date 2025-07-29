@@ -2,8 +2,9 @@ import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://notely-notes-app.onrender.com/api"
-  //"http://localhost:5000/api",
+  baseURL: "https://notely-notes-app.onrender.com/api",
+  //  baseURL: "http://localhost:5000/api",
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(

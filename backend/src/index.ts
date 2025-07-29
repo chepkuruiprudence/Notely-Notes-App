@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: ["https://notely-notes-app-g9bb.vercel.app"],
+    // origin: ["http://localhost:5173"],
     credentials: true,
   }),
 );
@@ -29,6 +30,8 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/notes", authenticateToken, noteRouter);
 app.use("/api/user", authenticateToken, userRouter);
+
+console.log("Router mounted");
 
 app.listen(PORT, () => {
   console.log(`Server is running on port:${PORT}`);

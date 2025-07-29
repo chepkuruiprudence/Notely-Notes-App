@@ -2,15 +2,14 @@ import { Router } from "express";
 import {
   createNote,
   getSpecificNote,
-  getAllDeletedNotes,
   updateNote,
   deleteNote,
   restoreDeletedNote,
-  getPinnedNotes,
-  togglePinNote,
+  toggleNotePin,
   getAllNotes,
 } from "../controllers/notely.controller";
 import authenticateToken from "../middlewares/auth.middleware";
+import validatenote from "../middlewares/validatenote";
 
 const router: Router = Router();
 
@@ -18,18 +17,14 @@ router.post("/", authenticateToken, createNote);
 
 router.get("/:noteId", authenticateToken, getSpecificNote);
 
-router.get("/trash", authenticateToken, getAllDeletedNotes);
-
 router.patch("/:noteId", authenticateToken, updateNote);
 
 router.delete("/:noteId", authenticateToken, deleteNote);
 
 router.patch("/:noteId/restore", authenticateToken, restoreDeletedNote);
 
-router.patch("/:id/pin-toggle", authenticateToken, togglePinNote);
+router.patch("/:id/pin-toggle", authenticateToken, toggleNotePin);
 
-router.get("/pinned", authenticateToken, getPinnedNotes);
-
-router.get("/notes", getAllNotes);
+router.get("/", authenticateToken, validatenote, getAllNotes);
 
 export default router;

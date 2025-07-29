@@ -23,6 +23,7 @@ interface signInDetails {
 }
 
 const Login = () => {
+  const token = localStorage.getItem("token");
   const { setUser } = useUser();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
@@ -32,7 +33,9 @@ const Login = () => {
   const { isPending, mutate } = useMutation({
     mutationKey: ["login_user"],
     mutationFn: async (loginDetails: signInDetails) => {
-      const response = await axiosInstance.post("/auth/login", loginDetails);
+      const response = await axiosInstance.post("/auth/login", loginDetails, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     },
     onError: (err) => {

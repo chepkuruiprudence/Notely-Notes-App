@@ -5,16 +5,22 @@ import {
   updateUserPassword,
   updateUserProfile,
   getAllUserNotes,
+  getPinnedNotes,
+  getAllDeletedNotes,
 } from "../controllers/user.controller";
 
 const router: Router = Router();
 
 router.get("/", authenticateToken, getUserProfile);
 
-router.patch("/notes", authenticateToken, updateUserProfile);
+router.patch("/user/:id", authenticateToken, updateUserProfile);
 
-router.post("/password", authenticateToken, updateUserPassword);
+router.patch("/password", authenticateToken, updateUserPassword);
 
 router.get("/notes", authenticateToken, getAllUserNotes);
+
+router.get("/pinned", authenticateToken, getPinnedNotes);
+
+router.get("/trash", authenticateToken, getAllDeletedNotes);
 
 export default router;

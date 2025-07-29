@@ -5,4 +5,5 @@ export interface Note {
   content: string;
   userId: string;
   isPinned: boolean;
+  isPublic: boolean;
 }

@@ -20,13 +20,15 @@ interface Note {
   synopsis: string;
   content: string;
   userId: string;
+  isPublic: boolean;
+  isPinned: boolean;
 }
 
 const Notes = () => {
   const { data, isLoading, isError, error } = useQuery<Note[], Error>({
-    queryKey: ["myNotes"],
+    queryKey: ["Notes"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/user/notes");
+      const response = await axiosInstance.get("user/notes");
       return response.data;
     },
   });
@@ -55,11 +57,13 @@ const Notes = () => {
           data.map((note) => (
             <Grid key={note.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <Notecard
-                id={note.id}
+                noteId={note.id}
                 title={note.title}
                 synopsis={note.synopsis}
                 content={note.content}
                 userId={note.userId}
+                isPublic={note.isPublic}
+                isPinned={note.isPinned}
               />
             </Grid>
           ))}

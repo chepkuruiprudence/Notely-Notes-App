@@ -70,28 +70,49 @@ const Fullnote = () => {
       <Typography
         variant="h4"
         gutterBottom
-        sx={{ mt: 3, fontSize: { xs: "1.8rem", md: "2.4rem" } }}
+        sx={{
+          fontWeight: "bold",
+          color: "#333",
+          fontSize: { xs: "1.8rem", md: "2.4rem" },
+          mb: 2,
+        }}
       >
         {Note.title}
       </Typography>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-          mb: 3,
-          flexWrap: "wrap",
-        }}
-      ></Box>
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "#1976d2",
+            fontWeight: 600,
+            mb: 1,
+            fontSize: { xs: "1.2rem", md: "1.3rem" },
+          }}
+        >
+          Synopsis
+        </Typography>
+        <Typography sx={{ color: "#444", fontSize: "1rem" }}>
+          {Note.synopsis}
+        </Typography>
+      </Box>
 
-      <Typography
-        variant="body1"
-        component="div"
-        sx={{ fontSize: { xs: "1rem", md: "1.1rem" }, lineHeight: 1.7 }}
-      >
-        <ReactMarkdown>{Note.content}</ReactMarkdown>
-      </Typography>
+      <Box sx={{ mb: 2 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: "#1976d2",
+            fontWeight: 600,
+            mb: 1,
+            fontSize: { xs: "1.2rem", md: "1.3rem" },
+          }}
+        >
+          Content
+        </Typography>
+        <Box sx={{ fontSize: { xs: "1rem", md: "1.1rem" }, lineHeight: 1.7 }}>
+          <ReactMarkdown>{Note.content}</ReactMarkdown>
+        </Box>
+      </Box>
     </Container>
   );
 };

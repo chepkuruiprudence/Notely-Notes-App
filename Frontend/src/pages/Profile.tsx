@@ -13,11 +13,12 @@ import PasswordForm from "../components/PasswordEditForm";
 import ProfileImageUpload from "../components/Profileupdate";
 
 interface user {
+  id: string;
   firstName: string;
   secondName: string;
-  email: string;
+  emailAddress: string;
   userName: string;
-  avatar: string;
+  profileImage: string;
 }
 
 const Profile = () => {
@@ -25,21 +26,33 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
     firstName: "",
-    secondName: "",
-    email: "",
+    lastName: "",
+    emailAddress: "",
     userName: "",
+    profileImage: "",
   });
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axiosInstance.get("/user");
-        setUser(res.data);
+        const response = await axiosInstance.get("/user");
+        const profile = response.data.profile;
+
+        setUser({
+          id: profile.id,
+          firstName: profile.firstName,
+          secondName: profile.lastName,
+          emailAddress: profile.emailAddress,
+          userName: profile.userName,
+          profileImage: profile.profileImage,
+        });
+
         setFormValues({
-          firstName: res.data.firstName,
-          secondName: res.data.secondName,
-          email: res.data.email,
-          userName: res.data.userName,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          emailAddress: profile.emailAddress,
+          userName: profile.userName,
+          profileImage: profile.profileImage,
         });
       } catch (error) {
         console.error("Error fetching user", error);
@@ -56,7 +69,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      await axiosInstance.patch("/user", formValues);
+      await axiosInstance.patch(`/user/${user.id}`, formValues);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update profile", error);
@@ -105,7 +118,7 @@ const Profile = () => {
             <TextField
               label="Second Name"
               name="secondName"
-              value={formValues.secondName}
+              value={formValues.lastName}
               onChange={handleChange}
               fullWidth
               disabled={!isEditing}
@@ -121,7 +134,7 @@ const Profile = () => {
             <TextField
               label="Email"
               name="email"
-              value={formValues.email}
+              value={formValues.emailAddress}
               onChange={handleChange}
               fullWidth
               disabled={!isEditing}

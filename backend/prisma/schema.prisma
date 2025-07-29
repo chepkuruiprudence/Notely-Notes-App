@@ -25,6 +25,7 @@ model note{
   id String @id @default(uuid())
   title String
   synopsis String 
+  isPublic Boolean @default(false)
   isPinned  Boolean  @default(false)
   content String
   isDeleted Boolean @default(false)

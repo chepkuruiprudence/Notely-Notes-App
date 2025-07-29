@@ -6,19 +6,19 @@ import {
   ListItemText,
   Avatar,
   Button,
+  Alert,
   ListItemButton,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import useUser from "../store/userstore";
 import { useQuery } from "@tanstack/react-query";
-import axios from "../api/axios";
 import Notecard from "../components/notecard";
 import type { Note } from "../types/note";
+import axiosInstance from "../api/axios";
 
 const Dashboard = () => {
   const { user, logoutUser } = useUser();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const handleLogout = () => {
     logoutUser();
@@ -34,18 +34,20 @@ const Dashboard = () => {
   ];
 
   const {
-    data: pinnedNotes,
+    data: pinnedNotes = [],
     isLoading,
     isError,
-  } = useQuery({
+    error,
+  } = useQuery<Note[]>({
     queryKey: ["pinnedNotes"],
     queryFn: async () => {
-      const res = await axios.get("/notes/pinned", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return res.data.data;
+      try {
+        const res = await axiosInstance.get("/user/pinned");
+        return res.data.data || [];
+      } catch (error) {
+        console.error("Error fetching pinned notes:", error);
+        return [];
+      }
     },
   });
 
@@ -65,6 +67,12 @@ const Dashboard = () => {
           p: 3,
         }}
       >
+        {isError && (
+          <Alert severity="error">
+            {error.message || "Failed to load pinned notes"}
+          </Alert>
+        )}
+
         <Box>
           <Typography variant="h5" mb={2}>
             Notely Dashboard
@@ -137,6 +145,64 @@ const Dashboard = () => {
 
         <Box mt={4}>
           <Typography variant="h6" gutterBottom>
+            Note Summary
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Box
+                sx={{
+                  backgroundColor: "#e3f2fd",
+                  p: 3,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                <Typography variant="h6">Pinned Notes</Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {pinnedNotes?.length || 0}
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Box
+                sx={{
+                  backgroundColor: "#e8f5e9",
+                  p: 3,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                <Typography variant="h6">Public Notes</Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {pinnedNotes?.filter((note: Note) => note.isPublic).length ||
+                    0}
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <Box
+                sx={{
+                  backgroundColor: "#fff3e0",
+                  p: 3,
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                <Typography variant="h6">Private Notes</Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {pinnedNotes?.filter((note: Note) => !note.isPublic).length ||
+                    0}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box mt={4}>
+          <Typography variant="h6" gutterBottom>
             Pinned Notes
           </Typography>
 
@@ -154,11 +220,13 @@ const Dashboard = () => {
               {pinnedNotes.map((note: Note) => (
                 <Grid key={note.id} size={{ xs: 12, sm: 6, md: 4 }}>
                   <Notecard
-                    id={note.id}
+                    noteId={note.id}
                     title={note.title}
                     synopsis={note.synopsis}
                     content={note.content}
                     userId={note.userId}
+                    isPinned={note.isPinned}
+                    isPublic={note.isPublic}
                   />
                 </Grid>
               ))}

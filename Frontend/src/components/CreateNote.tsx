@@ -14,16 +14,15 @@ import {
   Button,
   FormControl,
   FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 const CreateNote = () => {
   const [title, setTitle] = useState("");
   const [synopsis, setSynopsis] = useState("");
   const [content, setContent] = useState("");
-  const [visibility, setVisibility] = useState("private");
+  const [isPublic, setIsPublic] = useState(false);
   const [formError, setFormError] = useState("");
   const navigate = useNavigate();
 
@@ -36,7 +35,7 @@ const CreateNote = () => {
         title,
         synopsis,
         content,
-        visibility,
+        isPublic,
       });
 
       return res.data;
@@ -47,7 +46,7 @@ const CreateNote = () => {
       setTitle("");
       setSynopsis("");
       setContent("");
-      setVisibility("private");
+      setIsPublic(true);
       setFormError("");
     },
 
@@ -94,24 +93,15 @@ const CreateNote = () => {
               onChange={(e) => setContent(e.target.value)}
             />
 
-            <FormControl>
+            <FormControl fullWidth>
               <FormLabel>Visibility</FormLabel>
-              <RadioGroup
-                row
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
+              <Select
+                value={isPublic}
+                onChange={(e) => setIsPublic(e.target.value === "true")}
               >
-                <FormControlLabel
-                  value="private"
-                  control={<Radio />}
-                  label="Private"
-                />
-                <FormControlLabel
-                  value="public"
-                  control={<Radio />}
-                  label="Public"
-                />
-              </RadioGroup>
+                <MenuItem value="false">Private</MenuItem>
+                <MenuItem value="true">Public</MenuItem>
+              </Select>
             </FormControl>
 
             <Button

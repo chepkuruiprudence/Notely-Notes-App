@@ -19,86 +19,77 @@ const CircleImage = styled("img")({
 });
 
 const StatCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(4),
   backgroundColor: "#f5f5f5",
-  width: "100%",
-  maxWidth: 300,
   textAlign: "center",
+  height: "150px",
 }));
 
 const HomePage = () => {
   return (
-    <>
+    <Box>
       <Grid
         container
-        spacing={4}
         sx={{
           padding: 4,
-          display: "flex",
-          flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
           backgroundImage: `url(${homepageImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          minHeight: "50vh",
+          minHeight: "80vh",
+          textAlign: "center",
+          color: "white",
         }}
       >
-        <Grid
-          size={{ xs: 12, sm: 6, md: 4 }}
-          sx={{
-            textAlign: "center",
-            marginBottom: 4,
-            color: "white",
-            gap: 2,
-          }}
-        >
+        <Grid size={{ xs: 12, sm: 10, md: 8 }}>
           <Typography variant="h3" gutterBottom>
-            Welcome to Notely
+            Smart Notes Made Simple
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Capture your thoughts, ideas, and tasks effortlessly with Notely.
-            Stay organized and inspired.
+            Transform the way you capture, organize, and access your ideas.
+            Notely's intelligent note-taking platform helps you stay productive
+            and never lose track of important thoughts.
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            component={Link}
-            to="/login"
-          >
-            Get Started
-          </Button>
-        </Grid>
 
-        <Grid
-          size={{ xs: 12, sm: 6, md: 4 }}
-          sx={{ display: "flex", justifyContent: "center", marginBottom: 4 }}
-        >
-          <CircleImage src={homepageImg} alt="Homepage preview" />
+          <Box
+            mt={4}
+            display="flex"
+            gap={2}
+            justifyContent="center"
+            flexWrap="wrap"
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              to="/login"
+            >
+              Get Started
+            </Button>
+            <Button
+              variant="outlined"
+              color="inherit"
+              component={Link}
+              to="/notes"
+            >
+              Explore Notes
+            </Button>
+          </Box>
+
+          <Box mt={4} display="flex" justifyContent="center">
+            <CircleImage src={homepageImg} alt="Hero preview" />
+          </Box>
         </Grid>
       </Grid>
-      <Box
-        sx={{
-          backgroundColor: "#ffffff",
-          py: 6,
-          px: 2,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            maxWidth: "1000px",
-            justifyContent: "space-around",
-          }}
-        >
+
+      <Box sx={{ backgroundColor: "#fff", py: 6, px: 2 }}>
+        <Grid container spacing={4} justifyContent="center">
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard elevation={3}>
               <CardContent>
-                <Typography variant="h6">1,200+ Notes</Typography>
-                <Typography variant="body2">Created by our users</Typography>
+                <Typography variant="h4">1,200+</Typography>
+                <Typography variant="body2">Notes created</Typography>
               </CardContent>
             </StatCard>
           </Grid>
@@ -106,8 +97,8 @@ const HomePage = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard elevation={3}>
               <CardContent>
-                <Typography variant="h6">97% Satisfaction</Typography>
-                <Typography variant="body2">Based on user feedback</Typography>
+                <Typography variant="h4">97%</Typography>
+                <Typography variant="body2">User satisfaction</Typography>
               </CardContent>
             </StatCard>
           </Grid>
@@ -115,14 +106,23 @@ const HomePage = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatCard elevation={3}>
               <CardContent>
-                <Typography variant="h6">Fast Sync</Typography>
-                <Typography variant="body2">Across all devices</Typography>
+                <Typography variant="h4">24/7</Typography>
+                <Typography variant="body2">Sync across devices</Typography>
+              </CardContent>
+            </StatCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <StatCard elevation={3}>
+              <CardContent>
+                <Typography variant="h4">50+</Typography>
+                <Typography variant="body2">Active contributors</Typography>
               </CardContent>
             </StatCard>
           </Grid>
         </Grid>
       </Box>
-    </>
+    </Box>
   );
 };
 

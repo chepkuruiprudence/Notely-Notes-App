@@ -20,6 +20,8 @@ interface Note {
   synopsis: string;
   content: string;
   userId: string;
+  isPinned: boolean;
+  isPublic: boolean;
 }
 
 const MyNotes = () => {
@@ -55,11 +57,13 @@ const MyNotes = () => {
           data.map((note) => (
             <Grid key={note.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <Notecard
-                id={note.id}
+                noteId={note.id}
                 title={note.title}
                 synopsis={note.synopsis}
                 content={note.content}
                 userId={note.userId}
+                isPinned={note.isPinned}
+                isPublic={note.isPublic}
               />
             </Grid>
           ))}

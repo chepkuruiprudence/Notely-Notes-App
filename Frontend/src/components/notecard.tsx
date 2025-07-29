@@ -6,6 +6,9 @@ import {
   Button,
   IconButton,
   Stack,
+  Tooltip,
+  Chip,
+  CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import EditNoteForm from "./EditNoteForm";
@@ -13,28 +16,31 @@ import useUser from "../store/userstore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../api/axios";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Tooltip from "@mui/material/Tooltip";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PushPinIcon from "@mui/icons-material/PushPin";
 
 interface NoteCardProps {
-  id: string;
+  noteId: string;
   title: string;
   synopsis: string;
   content: string;
   userId: string;
+  isPinned: boolean;
+  isPublic: boolean;
 }
 
 const Notecard: React.FC<NoteCardProps> = ({
-  id,
+  noteId,
   title,
   synopsis,
-  userId,
   content,
+  userId,
+  isPinned,
+  isPublic,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useUser();
-
+  const token = localStorage.getItem("token");
   const queryClient = useQueryClient();
 
   const { mutate: updateNote } = useMutation({
@@ -42,19 +48,66 @@ const Notecard: React.FC<NoteCardProps> = ({
       title: string;
       synopsis: string;
       content: string;
+      isPinned: boolean;
+      isPublic: boolean;
     }) => {
-      const res = await axiosInstance.patch(`/notes/${id}`, updatedNote);
+      const res = await axiosInstance.patch(`/notes/${noteId}`, updatedNote);
       return res.data;
     },
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-
       setIsEditing(false);
     },
+    onError: (err) => console.error("Update error", err),
+  });
 
+  const { mutate: deleteNote } = useMutation({
+    mutationFn: async () => {
+      const response = await axiosInstance.delete(`/notes/${noteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["pinnedNotes"] });
+      queryClient.invalidateQueries({ queryKey: ["myNotes"] });
+      queryClient.invalidateQueries({ queryKey: ["Notes"] });
+    },
     onError: (err) => {
-      console.error("update error", err);
+      console.error("Delete error", err);
+      if (err instanceof Error) {
+        alert(`Failed to delete note: ${err.message}`);
+      }
+    },
+  });
+
+  const { mutate: togglePin, isPending: isTogglingPin } = useMutation({
+    mutationFn: async () => {
+      const response = await axiosInstance.patch(
+        `/notes/${noteId}/pin-toggle`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["pinnedNotes"] });
+      queryClient.invalidateQueries({ queryKey: ["myNotes"] });
+      queryClient.invalidateQueries({ queryKey: ["publicNotes"] });
+    },
+    onError: (err) => {
+      console.error("Pin toggle error", err);
+      if (err instanceof Error) {
+        alert(`Failed to toggle pin: ${err.message}`);
+      }
     },
   });
 
@@ -62,28 +115,11 @@ const Notecard: React.FC<NoteCardProps> = ({
     title: string;
     synopsis: string;
     content: string;
+    isPinned: boolean;
+    isPublic: boolean;
   }) => {
-    updateNote({
-      title: updatedNote.title,
-      synopsis: updatedNote.synopsis,
-      content: updatedNote.content,
-    });
+    updateNote(updatedNote);
   };
-
-  const { mutate: deleteNote } = useMutation({
-    mutationFn: async () => {
-      await axiosInstance.delete(`/notes/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
-    },
-
-    onError: (err) => {
-      console.log("Error deleting", err);
-    },
-  });
 
   if (isEditing) {
     return (
@@ -91,26 +127,24 @@ const Notecard: React.FC<NoteCardProps> = ({
         initialTitle={title}
         initialSynopsis={synopsis}
         initialContent={content}
+        initialIsPinned={isPinned ?? false}
+        initialIsPublic={isPublic ?? false}
         onSave={handleSaveUpdatedNote}
         onCancel={() => setIsEditing(false)}
       />
     );
   }
 
-  const { mutate: togglePin } = useMutation({
-    mutationFn: async () => {
-      await axiosInstance.patch(`/notes/${id}/pin-toggle`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      queryClient.invalidateQueries({ queryKey: ["pinnedNotes"] });
-    },
-  });
-
   return (
-    <Card>
-      <CardContent>
-        <Typography>Create a Note.</Typography>
+    <Card
+      sx={{
+        border: isPinned ? "2px solid #6633CC" : "none",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1 }}>
         <Typography variant="h6" gutterBottom>
           {title}
         </Typography>
@@ -119,17 +153,24 @@ const Notecard: React.FC<NoteCardProps> = ({
           {synopsis}
         </Typography>
 
+        <Chip
+          label={isPublic ? "Public" : "Private"}
+          color={isPublic ? "success" : "default"}
+          size="small"
+          sx={{ mt: 1, mb: 1 }}
+        />
+
         <Button
           component={Link}
-          to={`/notes/${id}`}
+          to={`/notes/${noteId}`}
           variant="text"
-          sx={{ color: "#6633CC", fontWeight: "bold" }}
+          sx={{ color: "#6633CC", fontWeight: "bold", mt: 1 }}
         >
           Read More →
         </Button>
 
         {user?.id === userId && (
-          <Stack direction="row" spacing={2} padding={1}>
+          <Stack direction="row" spacing={1} mt={2}>
             <Tooltip title="Edit Note">
               <IconButton
                 onClick={() => setIsEditing(true)}
@@ -149,6 +190,8 @@ const Notecard: React.FC<NoteCardProps> = ({
                   if (
                     window.confirm("Are you sure you want to delete this note?")
                   ) {
+                    console.log("Attempting to delete note:", noteId);
+                    console.log("Using token:", token);
                     deleteNote();
                   }
                 }}
@@ -162,9 +205,25 @@ const Notecard: React.FC<NoteCardProps> = ({
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Toggle Pin">
-              <IconButton onClick={() => togglePin()}>
-                <PushPinIcon />
+            <Tooltip title={isPinned ? "Unpin Note" : "Pin Note"}>
+              <IconButton
+                onClick={() => togglePin()}
+                disabled={isTogglingPin}
+                sx={{
+                  backgroundColor: isPinned ? "#6633CC" : "inherit",
+                  color: isPinned ? "white" : "inherit",
+                  "&:hover": {
+                    backgroundColor: isPinned
+                      ? "#4a1e99"
+                      : "rgba(0, 0, 0, 0.04)",
+                  },
+                }}
+              >
+                {isTogglingPin ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  <PushPinIcon />
+                )}
               </IconButton>
             </Tooltip>
           </Stack>

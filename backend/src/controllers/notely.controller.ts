@@ -6,7 +6,7 @@ const client = new PrismaClient();
 export const getAllNotes = async (req: Request, res: Response) => {
   try {
     const notes = await client.note.findMany({
-      where: { isDeleted: false },
+      where: { isDeleted: false, isPublic: true },
       orderBy: {
         dateCreated: "desc",
       },
@@ -21,9 +21,9 @@ export const getAllNotes = async (req: Request, res: Response) => {
 //create note
 export const createNote = async (req: Request, res: Response) => {
   try {
-    const { title, synopsis, content } = req.body;
+    const { title, synopsis, content, isPublic } = req.body;
 
-    if (!title || !synopsis || !content) {
+    if (!title || !synopsis || !content || typeof isPublic !== "boolean") {
       return res.status(400).json({ message: "Missing required body field." });
     }
 
@@ -33,6 +33,7 @@ export const createNote = async (req: Request, res: Response) => {
         synopsis,
         content,
         userId: req.user.id,
+        isPublic,
       },
     });
     res.status(201).json(note);
@@ -40,39 +41,6 @@ export const createNote = async (req: Request, res: Response) => {
   } catch (e) {
     console.error(e);
     res.status(400).json({ message: "Something went wrong" });
-  }
-};
-//get deleted notes for a user
-export const getAllDeletedNotes = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user.id;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
-
-    const deletedNotes = await client.note.findMany({
-      where: {
-        isDeleted: true,
-        userId: req.user.id,
-      },
-      orderBy: {
-        lastUpdated: "desc",
-      },
-    });
-
-    if (!deletedNotes || deletedNotes.length === 0) {
-      return res.status(404).json({ message: "There are no deleted posts" });
-    }
-
-    console.log(deletedNotes);
-    return res.status(200).json({
-      message: "Deleted notes fetched successfully",
-      data: deletedNotes,
-    });
-  } catch (e) {
-    console.error("Error fetching deleted notes:", e);
-    return res.status(500).json({ message: "Internal Server error" });
   }
 };
 
@@ -107,12 +75,16 @@ export const getSpecificNote = async (req: Request, res: Response) => {
 
 //update note
 
-type Params = { id: string };
+type Params = { noteId: string };
 
 export const updateNote = async (req: Request<Params>, res: Response) => {
   try {
-    const { title, synopsis, content } = req.body;
-    const noteId = req.params.id;
+    const { title, synopsis, content, isPinned, isPublic } = req.body;
+    const noteId = req.params.noteId;
+
+    if (!noteId) {
+      return res.status(400).json({ message: "Note ID is required" });
+    }
     const userId = req.user.id;
 
     const note = await client.note.findUnique({ where: { id: noteId } });
@@ -125,7 +97,13 @@ export const updateNote = async (req: Request<Params>, res: Response) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    console.log("Updating note with:", { title, synopsis, content });
+    console.log("Updating note with:", {
+      title,
+      synopsis,
+      content,
+      isPinned,
+      isPublic,
+    });
 
     const updatedNote = await client.note.update({
       where: { id: noteId },
@@ -167,7 +145,7 @@ export const deleteNote = async (req: Request, res: Response) => {
       data: { isDeleted: true },
     });
 
-    return res.status(204).json({ message: "Note deleted successfully" });
+    return res.status(200).json({ message: "Note deleted successfully", note });
   } catch (e) {
     console.error(" Error during deletenote operation:", e);
     return res.status(500).json({ message: "Failed to delete note" });
@@ -207,44 +185,30 @@ export const restoreDeletedNote = async (req: Request, res: Response) => {
   }
 };
 
-export const togglePinNote = async (req: Request<Params>, res: Response) => {
+// PATCH /notes/:id/pin-toggle
+export const toggleNotePin = async (req: Request, res: Response) => {
   try {
-    const noteId = req.params.id;
+    const { id } = req.params;
     const userId = req.user.id;
 
-    const note = await client.note.findUnique({ where: { id: noteId } });
+    const note = await client.note.findUnique({
+      where: { id },
+    });
 
     if (!note || note.userId !== userId) {
-      return res.status(404).json({ message: "Not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Note not found or unauthorized" });
     }
 
-    const updated = await client.note.update({
-      where: { id: noteId },
+    const updatedNote = await client.note.update({
+      where: { id },
       data: { isPinned: !note.isPinned },
     });
 
-    return res.status(200).json({ message: "Toggled pin", updated });
+    res.status(200).json(updatedNote);
   } catch (e) {
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-export const getPinnedNotes = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user.id;
-    console.log("✅ GET /pinned was called");
-
-    const pinnedNotes = await client.note.findMany({
-      where: {
-        userId,
-        isPinned: true,
-        isDeleted: false,
-      },
-    });
-
-    return res.status(200).json(pinnedNotes);
-  } catch (err) {
-    console.error("Error fetching pinned notes", err);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error(e);
+    res.status(500).json({ message: "Failed to toggle pin status" });
   }
 };
