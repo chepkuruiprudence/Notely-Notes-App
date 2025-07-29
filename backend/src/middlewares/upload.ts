@@ -9,10 +9,10 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
+  destination: (_req, _file: Express.Multer.File, cb: any) => {
     cb(null, uploadDir);
   },
-  filename: (_req, file, cb) => {
+  filename: (_req, file: Express.Multer.File, cb: any) => {
     const ext = path.extname(file.originalname);
     const filename = `${Date.now()}-${file.fieldname}${ext}`;
     cb(null, filename);
@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req, file: Express.Multer.File, cb: any) => {
     const allowed = ["image/png", "image/jpeg", "image/jpg"];
     if (allowed.includes(file.mimetype)) {
       cb(null, true);
@@ -30,7 +30,7 @@ const upload = multer({
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024, // 2MB limit
+    fileSize: 5 * 1024 * 1024,
   },
 });
 

@@ -4,6 +4,6 @@ export interface Note {
   synopsis: string;
   content: string;
   userId: string;
-  isPinned: boolean;
-  isPublic: boolean;
+  isPinned?: boolean;
+  isPublic?: boolean;
 }

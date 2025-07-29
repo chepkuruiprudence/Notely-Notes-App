@@ -5,7 +5,7 @@ import noteRouter from "./routes/notes.route";
 import authenticateToken from "./middlewares/auth.middleware";
 import userRouter from "./routes/user.routes";
 import aiRouter from "./controllers/ai.controller";
-import assemblyRouter from "./routes/trascription.route";
+// import assemblyRouter from "./routes/trascription.route";
 
 
 const PORT = 5000;
@@ -34,7 +34,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/notes", authenticateToken, noteRouter);
 app.use("/api/user", authenticateToken, userRouter);
 app.use("/api", aiRouter);
-app.use("/api/transcription", assemblyRouter);
+// app.use("/api/transcription", assemblyRouter);
 app.use("/uploads", express.static("uploads"));
 
 

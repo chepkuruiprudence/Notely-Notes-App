@@ -1,7 +1,6 @@
-// src/components/SummarizeButton.tsx
 import { useState } from "react";
 import { Button, CircularProgress } from "@mui/material";
-import axiosInstance from "../api/axios"; // ✅ Correct import
+import axiosInstance from "../api/axios"; 
 
 interface SummarizeButtonProps {
   content: string;

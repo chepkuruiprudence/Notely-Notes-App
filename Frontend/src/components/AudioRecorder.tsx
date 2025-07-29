@@ -68,7 +68,6 @@ export default function AudioRecorder({ onTranscript }: AudioRecorderProps) {
 
   return (
     <Box mt={2}>
-      {/* Controls */}
       <Box display="flex" alignItems="center" gap={2}>
         <Tooltip title="Start Recording">
           <IconButton color="primary" onClick={startRecording}>
@@ -98,7 +97,6 @@ export default function AudioRecorder({ onTranscript }: AudioRecorderProps) {
           </span>
         </Tooltip>
 
-        {/* Live recording indicator */}
         {isRecording && (
           <Chip
             icon={
@@ -121,7 +119,6 @@ export default function AudioRecorder({ onTranscript }: AudioRecorderProps) {
         )}
       </Box>
 
-      {/* Transcript preview */}
       {transcript && (
         <Box mt={2}>
           <Typography variant="subtitle2" color="textSecondary">
@@ -133,7 +130,6 @@ export default function AudioRecorder({ onTranscript }: AudioRecorderProps) {
         </Box>
       )}
 
-      {/* Error */}
       {error && (
         <Typography color="error" variant="body2" mt={1}>
           {error}
