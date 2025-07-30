@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import authRouter from "./routes/auth.route";
@@ -5,8 +7,7 @@ import noteRouter from "./routes/notes.route";
 import authenticateToken from "./middlewares/auth.middleware";
 import userRouter from "./routes/user.routes";
 import aiRouter from "./controllers/ai.controller";
-// import assemblyRouter from "./routes/trascription.route";
-
+// import assemblyRouter from "./routes/trascription.route"
 
 const PORT = 5000;
 const app = express();
@@ -36,7 +37,6 @@ app.use("/api/user", authenticateToken, userRouter);
 app.use("/api", aiRouter);
 // app.use("/api/transcription", assemblyRouter);
 app.use("/uploads", express.static("uploads"));
-
 
 console.log("Router mounted");
 

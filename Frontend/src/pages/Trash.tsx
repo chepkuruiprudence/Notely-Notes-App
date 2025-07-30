@@ -68,7 +68,7 @@ const Trash: React.FC = () => {
               title={note.title}
               synopsis={note.synopsis}
               content={note.content}
-              isDeleted={note.isDeleted }
+              isDeleted={note.isDeleted}
             />
           </Box>
         ))}

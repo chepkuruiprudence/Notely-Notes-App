@@ -7,6 +7,7 @@ import {
   getAllUserNotes,
   getPinnedNotes,
   getAllDeletedNotes,
+  updateProfile,
 } from "../controllers/user.controller";
 import upload from "../middlewares/upload";
 
@@ -15,14 +16,13 @@ const router: Router = Router();
 router.get("/", authenticateToken, getUserProfile);
 
 router.patch(
-  "/user/:id",
+  "/upload-profile-image",
   authenticateToken,
   upload.single("profileImage"),
-  updateUserProfile
+  updateProfile,
 );
 
-
-// router.patch("/user/:id", authenticateToken, updateUserProfile);
+router.patch("/user", authenticateToken, updateUserProfile);
 
 router.patch("/password", authenticateToken, updateUserPassword);
 

@@ -4,7 +4,6 @@
 
 // const router = express.Router();
 
-
 // router.post("/transcribe", upload.single("audio"), async (req, res) => {
 //   try {
 //     if (!req.file) {
@@ -14,7 +13,6 @@
 //     const convertedPath = `uploads/converted-${Date.now()}.wav`;
 //     const audioStream = fs.createReadStream(convertedPath);
 // await transcribeAudio(req, res, audioStream);
-
 
 //     // 🔄 Convert uploaded file to WAV
 //     await convertToWav(req.file.path, convertedPath);

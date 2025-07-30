@@ -2,15 +2,15 @@ import {
   Card,
   CardContent,
   Typography,
-  Box,
   Button,
   Stack,
   TextField,
+  Grid,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import PasswordForm from "../components/PasswordEditForm";
-import ProfileImageUpload from "../components/Profileupdate";
+import ProfileImageCard from "../components/Profileimagecard";
 
 interface user {
   id: string;
@@ -31,15 +31,23 @@ const Profile = () => {
     userName: "",
     profileImage: "",
   });
-  const token = localStorage.getItem("token");
-
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
     const fetchUser = async () => {
       try {
-        const response = await axiosInstance.get("/user");
+        const response = await axiosInstance.get("/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         const profile = response.data.profile;
-        
 
         setUser({
           id: profile.id,
@@ -70,112 +78,95 @@ const Profile = () => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
 
-  console.log("Current User:", user);
-
   const handleSave = async () => {
     try {
-      await axiosInstance.patch(`/user/${user.id}`, formValues,  {
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "multipart/form-data",
-  },
-});
+      await axiosInstance.patch(`/user/user`, formValues);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update profile", error);
     }
   };
 
-  if (!user) return <div>Loading...</div>;
-
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", md: "row" },
-        alignItems: "flex-start",
-        justifyContent: "center",
-        gap: 4,
-        padding: 2,
-        paddingTop: "80px",
-      }}
-    >
-      <Card
-        sx={{
-          padding: 3,
-          boxShadow: 3,
-          width: { xs: "100%", sm: "90%", md: "500px" },
-          marginTop: { xs: 2, md: 6 },
-        }}
+    <Grid container spacing={4} justifyContent="center">
+      
+      <Grid
+        size={{ xs: 12, md: 4, lg: 3 }}
+        display="flex"
+        justifyContent="center"
       >
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-            <ProfileImageUpload user={user} />
-            <Typography variant="h6">
-              {user.firstName} {user.lastName}
+        <ProfileImageCard user={user} />
+      </Grid>
+
+      <Grid
+        size={{ xs: 12, md: 8, lg: 6 }}
+        display="flex"
+        justifyContent="center"
+      >
+        <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              User Details
             </Typography>
-          </Box>
+            <Stack spacing={2}>
+              <TextField
+                label="First Name"
+                name="firstName"
+                value={formValues.firstName}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing}
+              />
+              <TextField
+                label="Second Name"
+                name="lastName"
+                value={formValues.lastName}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing}
+              />
+              <TextField
+                label="User Name"
+                name="userName"
+                value={formValues.userName}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing}
+              />
+              <TextField
+                label="Email"
+                name="emailAddress"
+                value={formValues.emailAddress}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing}
+              />
+            </Stack>
+            <Button
+              variant="contained"
+              sx={{ mt: 3, backgroundColor: "#6633CC" }}
+              fullWidth
+              onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            >
+              {isEditing ? "Save Changes" : "Edit Profile"}
+            </Button>
+          </CardContent>
+        </Card>
+      </Grid>
 
-          <Stack spacing={2}>
-            <TextField
-              label="First Name"
-              name="firstName"
-              value={formValues.firstName}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-            />
-            <TextField
-              label="Second Name"
-              name="lastName"
-              value={formValues.lastName}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-            />
-            <TextField
-              label="User Name"
-              name="userName"
-              value={formValues.userName}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-            />
-            <TextField
-              label="Email"
-              name="email"
-              value={formValues.emailAddress}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-            />
-          </Stack>
-
-          <Button
-            variant="contained"
-            sx={{ mt: 3, backgroundColor: "#6633CC" }}
-            fullWidth
-            onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          >
-            {isEditing ? "Save Changes" : "Edit Profile"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Box
-        sx={{
-          width: { xs: "100%", sm: "90%", md: "500px" },
-          marginTop: { xs: 2, md: 6 },
-        }}
+      <Grid
+        size={{ xs: 12, md: 8, lg: 6 }}
+        display="flex"
+        justifyContent="center"
       >
-        <Card sx={{ padding: 3, boxShadow: 3 }}>
+        <Card sx={{ padding: 3, boxShadow: 3, width: "100%" }}>
           <Typography variant="h6" gutterBottom>
             Change Password
           </Typography>
           <PasswordForm />
         </Card>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

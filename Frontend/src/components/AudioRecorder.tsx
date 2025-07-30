@@ -14,7 +14,6 @@
 // import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 // import axiosInstance from "../api/axios";
 
-
 // interface AudioRecorderProps {
 //   onTranscript: (transcript: string) => void;
 // }
@@ -49,11 +48,10 @@
 //       setError("");
 
 //        console.log("Base URL being used:", axiosInstance.defaults.baseURL);
-       
+
 //       const response = await axiosInstance.post("/transcription/transcribe", formData, {
 //   headers: { "Content-Type": "multipart/form-data" },
 // });
-
 
 //       const text = response.data.transcript;
 //       setTranscript(text);

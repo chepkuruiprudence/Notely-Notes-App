@@ -173,12 +173,11 @@ const Notecard: React.FC<NoteCardProps> = ({
 
         <SummarizeButton content={content} onSummary={setSummary} />
 
-{summary && (
-  <Typography variant="body2" sx={{ mt: 1 }}>
-    <strong>Summary:</strong> {summary}
-  </Typography>
-)}
-
+        {summary && (
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            <strong>Summary:</strong> {summary}
+          </Typography>
+        )}
 
         {user?.id === userId && (
           <Stack direction="row" spacing={1} mt={2}>

@@ -46,6 +46,7 @@ const Navbar = () => {
         { label: "Profile", to: "/profile" },
         { icon: <LogoutIcon />, onClick: handleLogout },
         { label: "Trash", to: "/trash" },
+        { label: "Dashboard", to: "/dashboard" },
       ]
     : [
         { label: "Home", to: "/" },

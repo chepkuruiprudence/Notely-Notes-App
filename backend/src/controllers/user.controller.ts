@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
+import cloudinary from "../config/cloudinary";
+import streamifier from "streamifier";
 
 const client = new PrismaClient();
 
@@ -29,34 +34,37 @@ export const getUserProfile = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server error" });
   }
 };
+
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.user.id;
     const { firstName, lastName, userName, emailAddress } = req.body;
 
-    const existingUser = await client.user.findUnique({ where: { id: userId } });
+    const existingUser = await client.user.findUnique({
+      where: { id: userId },
+    });
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let profileImage = existingUser.profileImage;
-
-    if (req.file) {
-      profileImage = `/uploads/${req.file.filename}`;
-    }
-
-    const updatedUser = await client.user.findUnique({
-  where: { id: userId },
-  select: {
-    id: true, 
-    firstName: true,
-    lastName: true,
-    userName: true,
-    emailAddress: true,
-    profileImage: true,
-  },
-});
-
+    const updatedUser = await client.user.update({
+      where: { id: userId },
+      data: {
+        firstName,
+        lastName,
+        userName,
+        emailAddress,
+        profileImage: req.file?.path || existingUser.profileImage,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        userName: true,
+        emailAddress: true,
+        profileImage: true,
+      },
+    });
 
     return res.status(200).json({
       message: "Profile updated successfully.",
@@ -67,7 +75,56 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { userName } = req.body;
+    const file = req.file;
 
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    let imageUrl: string | undefined;
+
+    if (file) {
+      const uploadFromBuffer = () =>
+        new Promise<any>((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "profile_images",
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+          streamifier.createReadStream(file.buffer).pipe(stream);
+        });
+
+      console.log("Cloudinary current config:", cloudinary.config());
+
+      const result = await uploadFromBuffer();
+      imageUrl = result.secure_url;
+    }
+
+    const updatedUser = await client.user.update({
+      where: { id: userId },
+      data: {
+        userName,
+        ...(imageUrl && { profileImage: imageUrl }),
+      },
+    });
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      profile: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const updateUserPassword = async (req: Request, res: Response) => {
   try {
@@ -144,13 +201,12 @@ export const getAllDeletedNotes = async (req: Request, res: Response) => {
       },
     });
 
-   if (!deletedNotes || deletedNotes.length === 0) {
-  return res.status(200).json({
-    message: "No deleted notes found",
-    data: [],
-  });
-}
-
+    if (!deletedNotes || deletedNotes.length === 0) {
+      return res.status(200).json({
+        message: "No deleted notes found",
+        data: [],
+      });
+    }
 
     console.log(deletedNotes);
     return res.status(200).json({

@@ -12,7 +12,9 @@ router.post("/summarize", async (req, res) => {
     const { content } = req.body;
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const result = await model.generateContent(`Summarize this note: ${content}`);
+    const result = await model.generateContent(
+      `Summarize this note: ${content}`,
+    );
     const response = result.response;
     const text = response.text();
 

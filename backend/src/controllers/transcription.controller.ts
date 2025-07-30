@@ -22,7 +22,7 @@
 // export const convertToWav = (inputPath: string, outputPath: string): Promise<string> => {
 //   return new Promise((resolve, reject) => {
 //     ffmpeg(inputPath)
-//       .audioCodec("pcm_s16le") 
+//       .audioCodec("pcm_s16le")
 //       .toFormat("wav")
 //       .on("end", () => resolve(outputPath))
 //       .on("error", (err) => reject(err))
@@ -53,12 +53,9 @@
 //   throw new Error(`WAV file not found at ${wavOutputPath}`);
 // }
 
-
 //     const audioData = fs.createReadStream(wavOutputPath);
 //     const form = new FormData();
 //     form.append("file", audioData);
-
-    
 
 //     let uploadResponse;
 //     try {

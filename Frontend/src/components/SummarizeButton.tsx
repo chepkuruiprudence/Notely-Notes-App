@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Button, CircularProgress } from "@mui/material";
-import axiosInstance from "../api/axios"; 
+import axiosInstance from "../api/axios";
 
 interface SummarizeButtonProps {
   content: string;
   onSummary: (summary: string) => void;
 }
 
-export default function SummarizeButton({ content, onSummary }: SummarizeButtonProps) {
+export default function SummarizeButton({
+  content,
+  onSummary,
+}: SummarizeButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleSummarize = async () => {
@@ -19,7 +22,7 @@ export default function SummarizeButton({ content, onSummary }: SummarizeButtonP
       onSummary(response.data.summary);
     } catch (error) {
       console.error("Summarization error:", error);
-      onSummary("⚠️ Failed to summarize note.");
+      onSummary("Failed to summarize note.");
     } finally {
       setLoading(false);
     }

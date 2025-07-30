@@ -17,31 +17,51 @@ import Notes from "./pages/Notes";
 import theme from "./theme";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import Trash from "./pages/Trash";
+import { useEffect } from "react";
+import { isTokenExpired } from "./utils/isTokenExpired";
 
 const client = new QueryClient();
 
 function App() {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && isTokenExpired(token)) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route element={<Protectedroutes />}>
-              <Route path="/Createnote" element={<CreateNote />} />
-              <Route path="/Mynotes" element={<MyNotes />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/trash" element={<Trash />} />
-            </Route>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/Notes" element={<Notes />} />
-            <Route path="/Login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/notes/:noteId" element={<Fullnote />} />
-          </Routes>
-          <Footer />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Navbar />
+            <div style={{ flex: 1 }}>
+              <Routes>
+                <Route element={<Protectedroutes />}>
+                  <Route path="/Createnote" element={<CreateNote />} />
+                  <Route path="/Mynotes" element={<MyNotes />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/trash" element={<Trash />} />
+                </Route>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/Notes" element={<Notes />} />
+                <Route path="/Login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/notes/:noteId" element={<Fullnote />} />
+              </Routes>
+            </div>
+            <Footer />
+          </div>
         </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>

@@ -31,13 +31,13 @@ const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
   const queryClient = useQueryClient();
 
   const { mutate: restoreNote } = useMutation({
-  mutationFn: () => axiosInstance.patch(`/notes/${id}/restore`),
-  onSuccess: () => {
-    queryClient.setQueryData(["trashNotes"], (oldData: any) =>
-      oldData?.filter((note: any) => note.id !== id)
-    );
-  },
-});
+    mutationFn: () => axiosInstance.patch(`/notes/${id}/restore`),
+    onSuccess: () => {
+      queryClient.setQueryData(["trashNotes"], (oldData: any) =>
+        oldData?.filter((note: any) => note.id !== id),
+      );
+    },
+  });
 
   const { mutate: permanentlyDelete } = useMutation({
     mutationFn: () => axiosInstance.delete(`/notes/${id}/permanent`),
@@ -55,7 +55,7 @@ const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: 300, 
+        minHeight: 300,
         p: 2,
         my: 2,
       }}
@@ -82,7 +82,7 @@ const TrashNoteCard: React.FC<TrashNoteCardProps> = ({
               color="primary"
               startIcon={<RestoreFromTrashIcon />}
               onClick={() => restoreNote()}
-              disabled={!isDeleted} 
+              disabled={!isDeleted}
             >
               Restore
             </Button>

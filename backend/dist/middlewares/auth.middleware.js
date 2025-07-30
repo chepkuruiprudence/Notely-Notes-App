@@ -14,7 +14,7 @@ const authenticateToken = (req, res, next) => {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         if (typeof decoded === "object" && decoded !== null) {
             const user = decoded;
-            console.log(" Logged-in user:", user);
+            console.log("Logged-in user:", user);
             req.user = user;
             return next();
         }
@@ -23,7 +23,10 @@ const authenticateToken = (req, res, next) => {
         }
     }
     catch (err) {
-        console.error(" JWT verification error:", err);
+        console.error("JWT verification error:", err);
+        if (err.name === "TokenExpiredError") {
+            return res.status(401).json({ message: "Token expired" });
+        }
         return res.status(403).json({ message: "Invalid or expired token." });
     }
 };

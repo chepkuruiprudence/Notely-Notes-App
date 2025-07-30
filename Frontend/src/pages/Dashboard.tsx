@@ -225,8 +225,8 @@ const Dashboard = () => {
                     synopsis={note.synopsis}
                     content={note.content}
                     userId={note.userId}
-                     isPinned={note.isPinned ?? false}
-  isPublic={note.isPublic ?? false}
+                    isPinned={note.isPinned ?? false}
+                    isPublic={note.isPublic ?? false}
                   />
                 </Grid>
               ))}

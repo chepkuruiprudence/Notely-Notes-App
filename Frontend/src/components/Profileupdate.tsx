@@ -1,41 +1,53 @@
 import React, { useRef, useState } from "react";
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import axiosInstance from "../api/axios";
 
 const Profile = ({ user }: { user: any }) => {
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  console.log("user:", user);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
+    }
+  };
 
-      const formData = new FormData();
-      formData.append("profileImage", file);
-      formData.append("firstName", user.firstName);
-      formData.append("lastName", user.lastName);
-      formData.append("userName", user.userName);
-      formData.append("emailAddress", user.emailAddress);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) return alert("No file selected");
 
-      try {
-        const res = await axiosInstance.post("/user/update", formData, {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-    "Content-Type": "multipart/form-data",
-  },
-});
+    const formData = new FormData();
+    formData.append("profileImage", selectedFile);
+    formData.append("firstName", user.firstName);
+    formData.append("lastName", user.lastName);
+    formData.append("userName", user.userName);
+    formData.append("emailAddress", user.emailAddress);
 
-        const data = await res.data;
-        console.log("Upload result:", data);
-      } catch (err) {
-        console.error("Upload failed", err);
-      }
+    try {
+      const res = await axiosInstance.patch(
+        `/user/upload-profile-image`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      const data = res.data;
+      console.log("Upload result:", data);
+    } catch (err) {
+      console.error("Upload failed", err);
     }
   };
 
@@ -43,41 +55,49 @@ const Profile = ({ user }: { user: any }) => {
   const showInitials = !preview && !user.profileImage;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-      }}
-    >
-      <Avatar
-        src={avatarSrc}
+    <form onSubmit={handleSubmit}>
+      <Box
         sx={{
-          width: 100,
-          height: 100,
-          cursor: "pointer",
-          bgcolor: "transparent",
-          color: "black",
-          border: "2px solid #1976d2",
-          fontSize: 32,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
         }}
-        onClick={handleAvatarClick}
       >
-        {showInitials &&
-          `${user.firstName?.[0]?.toUpperCase() ?? ""}${
-            user.lastName?.[0]?.toUpperCase() ?? ""
-          }`}
-      </Avatar>
+        <Avatar
+          src={avatarSrc}
+          sx={{
+            width: 100,
+            height: 100,
+            cursor: "pointer",
+            bgcolor: "transparent",
+            color: "black",
+            border: "2px solid #1976d2",
+            fontSize: 32,
+          }}
+          onClick={handleAvatarClick}
+        >
+          {showInitials &&
+            `${user.firstName?.[0]?.toUpperCase() ?? ""}${
+              user.lastName?.[0]?.toUpperCase() ?? ""
+            }`}
+        </Avatar>
 
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        onChange={handleImageChange}
-        style={{ display: "none" }}
-      />
-    </Box>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+
+        {selectedFile && (
+          <Button type="submit" variant="contained" color="primary">
+            Save Profile Image
+          </Button>
+        )}
+      </Box>
+    </form>
   );
 };
 

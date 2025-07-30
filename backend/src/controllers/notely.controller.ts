@@ -160,7 +160,6 @@ export const restoreDeletedNote = async (req: Request, res: Response) => {
 
     console.log("Restoring note:", { noteId, userId });
 
-
     const note = await client.note.findUnique({ where: { id: noteId } });
 
     if (!note) {

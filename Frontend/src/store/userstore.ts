@@ -1,7 +1,7 @@
 import { create, type StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface User {
+interface user {
   firstName: string;
   userName: string;
   lastName: string;
@@ -11,15 +11,15 @@ interface User {
 }
 
 interface UserStore {
-  user: User | null;
-  setUser: (userData: User) => void;
+  user: user | null;
+  setUser: (userData: user) => void;
   logoutUser: () => void;
 }
 
 const UserStore: StateCreator<UserStore> = (set) => {
   return {
     user: null,
-    setUser: (user: User) => {
+    setUser: (user: user) => {
       set(function () {
         return { user };
       });

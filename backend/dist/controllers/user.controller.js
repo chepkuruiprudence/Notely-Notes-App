@@ -12,9 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPinnedNotes = exports.getAllDeletedNotes = exports.getAllUserNotes = exports.updateUserPassword = exports.updateUserProfile = exports.getUserProfile = void 0;
+exports.getPinnedNotes = exports.getAllDeletedNotes = exports.getAllUserNotes = exports.updateUserPassword = exports.updateProfile = exports.updateUserProfile = exports.getUserProfile = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const client_1 = require("@prisma/client");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const cloudinary_1 = __importDefault(require("../config/cloudinary"));
+const streamifier_1 = __importDefault(require("streamifier"));
 const client = new client_1.PrismaClient();
 const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -41,19 +45,25 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getUserProfile = getUserProfile;
 const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const userId = req.user.id;
         const { firstName, lastName, userName, emailAddress } = req.body;
-        const existingUser = yield client.user.findUnique({ where: { id: userId } });
+        const existingUser = yield client.user.findUnique({
+            where: { id: userId },
+        });
         if (!existingUser) {
             return res.status(404).json({ message: "User not found" });
         }
-        let profileImage = existingUser.profileImage;
-        if (req.file) {
-            profileImage = `/uploads/${req.file.filename}`;
-        }
-        const updatedUser = yield client.user.findUnique({
+        const updatedUser = yield client.user.update({
             where: { id: userId },
+            data: {
+                firstName,
+                lastName,
+                userName,
+                emailAddress,
+                profileImage: ((_a = req.file) === null || _a === void 0 ? void 0 : _a.path) || existingUser.profileImage,
+            },
             select: {
                 id: true,
                 firstName: true,
@@ -74,6 +84,46 @@ const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.updateUserProfile = updateUserProfile;
+const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const { userName } = req.body;
+        const file = req.file;
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        let imageUrl;
+        if (file) {
+            const uploadFromBuffer = () => new Promise((resolve, reject) => {
+                const stream = cloudinary_1.default.uploader.upload_stream({
+                    folder: "profile_images",
+                }, (error, result) => {
+                    if (error)
+                        return reject(error);
+                    resolve(result);
+                });
+                streamifier_1.default.createReadStream(file.buffer).pipe(stream);
+            });
+            console.log("Cloudinary current config:", cloudinary_1.default.config());
+            const result = yield uploadFromBuffer();
+            imageUrl = result.secure_url;
+        }
+        const updatedUser = yield client.user.update({
+            where: { id: userId },
+            data: Object.assign({ userName }, (imageUrl && { profileImage: imageUrl })),
+        });
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            profile: updatedUser,
+        });
+    }
+    catch (error) {
+        console.error("Error updating profile:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
+exports.updateProfile = updateProfile;
 const updateUserPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { currentPassword, newPassword, confirmedPassword } = req.body;
