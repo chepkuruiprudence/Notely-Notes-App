@@ -7,6 +7,11 @@ const router = express.Router();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error("GEMINI_API_KEY is missing from environment variables.");
+}
+
+
 router.post("/summarize", async (req, res) => {
   try {
     const { content } = req.body;
