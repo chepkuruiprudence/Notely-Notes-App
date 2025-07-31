@@ -28,7 +28,7 @@ const Notes = () => {
   const { data, isLoading, isError, error } = useQuery<Note[], Error>({
     queryKey: ["Notes"],
     queryFn: async () => {
-      const response = await axiosInstance.get("user/notes");
+      const response = await axiosInstance.get("/notes");
       return response.data;
     },
   });

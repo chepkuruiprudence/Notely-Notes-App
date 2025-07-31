@@ -25,6 +25,6 @@ router.patch("/:noteId/restore", authenticateToken, restoreDeletedNote);
 
 router.patch("/:id/pin-toggle", authenticateToken, toggleNotePin);
 
-router.get("/", authenticateToken, validatenote, getAllNotes);
+router.get("/", validatenote, getAllNotes);
 
 export default router;
