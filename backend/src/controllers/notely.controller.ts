@@ -60,7 +60,6 @@ export const getSpecificNote = async (req: Request, res: Response) => {
       },
     });
 
-    console.log(note);
 
     if (!note) {
       return res
