@@ -8,7 +8,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import homepageImg from "../assets/images/homepage.jpg";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
+import useUser from "../store/userstore"; // 🔁 your auth hook
 
 const CircleImage = styled("img")({
   width: 200,
@@ -26,6 +27,8 @@ const StatCard = styled(Card)(({ theme }) => ({
 }));
 
 const HomePage = () => {
+  const { user } = useUser(); // ✅ Check if logged in
+
   return (
     <Box>
       <Grid
@@ -42,7 +45,7 @@ const HomePage = () => {
           color: "white",
         }}
       >
-        <Grid size={{ xs: 12, sm: 10, md: 8 }}>
+        <Grid size = {{ xs: 12, sm: 10, md: 8}}>
           <Typography variant="h3" gutterBottom>
             Smart Notes Made Simple
           </Typography>
@@ -52,21 +55,16 @@ const HomePage = () => {
             and never lose track of important thoughts.
           </Typography>
 
-          <Box
-            mt={4}
-            display="flex"
-            gap={2}
-            justifyContent="center"
-            flexWrap="wrap"
-          >
+          <Box mt={4} display="flex" gap={2} justifyContent="center" flexWrap="wrap">
             <Button
               variant="contained"
               color="primary"
               component={Link}
-              to="/login"
+              to={user ? "/notes" : "/login"}
             >
               Get Started
             </Button>
+
             <Button
               variant="outlined"
               color="inherit"
@@ -85,41 +83,22 @@ const HomePage = () => {
 
       <Box sx={{ backgroundColor: "#fff", py: 6, px: 2 }}>
         <Grid container spacing={4} justifyContent="center">
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <StatCard elevation={3}>
-              <CardContent>
-                <Typography variant="h4">1,200+</Typography>
-                <Typography variant="body2">Notes created</Typography>
-              </CardContent>
-            </StatCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <StatCard elevation={3}>
-              <CardContent>
-                <Typography variant="h4">97%</Typography>
-                <Typography variant="body2">User satisfaction</Typography>
-              </CardContent>
-            </StatCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <StatCard elevation={3}>
-              <CardContent>
-                <Typography variant="h4">24/7</Typography>
-                <Typography variant="body2">Sync across devices</Typography>
-              </CardContent>
-            </StatCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <StatCard elevation={3}>
-              <CardContent>
-                <Typography variant="h4">50+</Typography>
-                <Typography variant="body2">Active contributors</Typography>
-              </CardContent>
-            </StatCard>
-          </Grid>
+          
+          {[
+            ["1,200+", "Notes created"],
+            ["97%", "User satisfaction"],
+            ["24/7", "Sync across devices"],
+            ["50+", "Active contributors"],
+          ].map(([title, subtitle], index) => (
+            <Grid size = {{ xs: 12, sm: 6, md: 3}} key={index}>
+              <StatCard elevation={3}>
+                <CardContent>
+                  <Typography variant="h4">{title}</Typography>
+                  <Typography variant="body2">{subtitle}</Typography>
+                </CardContent>
+              </StatCard>
+            </Grid>
+          ))}
         </Grid>
       </Box>
     </Box>
