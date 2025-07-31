@@ -9,7 +9,7 @@ import {
 import { styled } from "@mui/material/styles";
 import homepageImg from "../assets/images/homepage.jpg";
 import { Link} from "react-router-dom";
-import useUser from "../store/userstore"; // 🔁 your auth hook
+import useUser from "../store/userstore"; 
 
 const CircleImage = styled("img")({
   width: 200,
@@ -27,7 +27,7 @@ const StatCard = styled(Card)(({ theme }) => ({
 }));
 
 const HomePage = () => {
-  const { user } = useUser(); // ✅ Check if logged in
+  const { user } = useUser(); 
 
   return (
     <Box>
