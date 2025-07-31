@@ -34,7 +34,8 @@ const ProfileImageCard = ({ user }: Props) => {
       setUploading(true);
 
       await axios.patch(
-        `https://bloggit-site-database.onrender.com/api/user/upload-profile-image`,
+        //`http://localhost:5000/api/user/upload-profile-image`,
+         `https://bloggit-site-database.onrender.com/api/user/upload-profile-image`,
         formData,
         {
           headers: {
@@ -63,7 +64,7 @@ const ProfileImageCard = ({ user }: Props) => {
   src={
     preview ||
     (user.profileImage
-      ? `https://bloggit-site-database.onrender.com/${user.profileImage}`
+      ? `https://bloggit-site-database.onrender.com/api/${user.profileImage}`
       : "https://ui-avatars.com/api/?name=" + user.userName)
   }
   sx={{ width: 120, height: 120 }}
