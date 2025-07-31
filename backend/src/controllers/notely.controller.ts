@@ -48,14 +48,18 @@ export const createNote = async (req: Request, res: Response) => {
 export const getSpecificNote = async (req: Request, res: Response) => {
   try {
     const { noteId } = req.params;
-    const userId = req.user.id;
+     const userId = req.user?.id; 
 
     const note = await client.note.findFirst({
       where: {
         id: noteId,
-        userId: userId,
+        OR: [
+          { userId: userId },
+          { isPublic: true, isDeleted: false }, 
+        ],
       },
     });
+
     console.log(note);
 
     if (!note) {
